@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  role      String   @default("USER") // "USER" or "ADMIN"
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  images      String   // Storing JSON stringified array of image URLs
+  category    String   // men, women, kids, sports
+  brand       String
+  sizes       String   // Storing JSON stringified array of sizes
+  stock       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id])
+  total           Float
+  status          String   @default("PENDING") // PENDING, PAID, SHIPPED, DELIVERED
+  items           String   // JSON stringified array of cart items
+  stripeSessionId String?
+  shippingAddress String?  // JSON stringified address object
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
