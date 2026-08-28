@@ -76,10 +76,15 @@ export default async function ProductsPage({
                     { label: 'Price: High to Low', value: 'price_desc' }
                   ].map(option => {
                     const isActive = (sort === option.value) || (!sort && option.value === 'newest');
+                    const sortParams = new URLSearchParams();
+                    if (category) sortParams.set('category', category);
+                    if (brand) sortParams.set('brand', brand);
+                    sortParams.set('sort', option.value);
+
                     return (
                       <Link 
                         key={option.value}
-                        href={`/products?${new URLSearchParams({...await searchParams, sort: option.value}).toString()}`} 
+                        href={`/products?${sortParams.toString()}`} 
                         className={`block transition-colors ${isActive ? "font-bold text-blue-600" : "text-gray-600 hover:text-black"}`}
                       >
                         {option.label}
