@@ -1,17 +1,26 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { ArrowRight, Filter } from "lucide-react";
+import { ArrowRight, Filter, Search, X } from "lucide-react";
 
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: { category?: string; brand?: string; sort?: string };
+  searchParams: { category?: string; brand?: string; sort?: string; search?: string; q?: string };
 }) {
-  const { category, brand, sort } = await searchParams;
+  const { category, brand, sort, search, q } = await searchParams;
+  const searchQuery = (search || q || '').trim();
 
   const where: any = {};
   if (category) where.category = category;
   if (brand) where.brand = brand;
+  if (searchQuery) {
+    where.OR = [
+      { name: { contains: searchQuery, mode: 'insensitive' } },
+      { category: { contains: searchQuery, mode: 'insensitive' } },
+      { brand: { contains: searchQuery, mode: 'insensitive' } },
+      { description: { contains: searchQuery, mode: 'insensitive' } },
+    ];
+  }
 
   let orderBy: any = { createdAt: 'desc' };
   if (sort === 'price_asc') orderBy = { price: 'asc' };
@@ -27,13 +36,25 @@ export default async function ProductsPage({
       <div className="container mx-auto px-4">
         
         {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 capitalize">
-            {category ? `${category} Footwear` : 'All Footwear'}
+        <div className="mb-8">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-3 capitalize">
+            {searchQuery 
+              ? `Results for "${searchQuery}"`
+              : category ? `${category} Footwear` : 'All Footwear'}
           </h1>
-          <p className="text-gray-500 text-lg">
-            Showing {products.length} {products.length === 1 ? 'product' : 'products'}
-          </p>
+          <div className="flex items-center gap-3">
+            <p className="text-gray-500 text-lg">
+              Showing {products.length} {products.length === 1 ? 'product' : 'products'}
+            </p>
+            {searchQuery && (
+              <Link 
+                href="/products" 
+                className="inline-flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-bold px-3 py-1 rounded-full transition-colors"
+              >
+                Clear Search <X className="w-3 h-3" />
+              </Link>
+            )}
+          </div>
         </div>
         
         <div className="flex flex-col lg:flex-row gap-12">
@@ -51,7 +72,12 @@ export default async function ProductsPage({
                   {['All', 'Men', 'Women', 'Kids', 'Sports'].map(cat => {
                     const catValue = cat.toLowerCase();
                     const isActive = (cat === 'All' && !category) || category === catValue;
-                    const href = cat === 'All' ? '/products' : `/products?category=${catValue}`;
+                    const catParams = new URLSearchParams();
+                    if (cat !== 'All') catParams.set('category', catValue);
+                    if (searchQuery) catParams.set('search', searchQuery);
+                    if (sort) catParams.set('sort', sort);
+
+                    const href = catParams.toString() ? `/products?${catParams.toString()}` : '/products';
                     
                     return (
                       <li key={cat}>
@@ -62,7 +88,7 @@ export default async function ProductsPage({
                           {cat}
                         </Link>
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               </div>
@@ -79,6 +105,7 @@ export default async function ProductsPage({
                     const sortParams = new URLSearchParams();
                     if (category) sortParams.set('category', category);
                     if (brand) sortParams.set('brand', brand);
+                    if (searchQuery) sortParams.set('search', searchQuery);
                     sortParams.set('sort', option.value);
 
                     return (
@@ -115,6 +142,7 @@ export default async function ProductsPage({
                         <div>
                           <p className="text-blue-600 text-xs font-bold uppercase tracking-wider mb-2">{product.brand}</p>
                           <h3 className="font-bold text-xl mb-1 text-gray-900 group-hover:text-blue-600 transition-colors">{product.name}</h3>
+                          <p className="text-gray-500 text-sm mb-4 line-clamp-2">{product.description}</p>
                         </div>
                         <div className="flex items-center justify-between mt-6">
                           <p className="font-bold text-xl">${product.price.toFixed(2)}</p>
@@ -129,8 +157,12 @@ export default async function ProductsPage({
               </div>
             ) : (
               <div className="text-center py-32 bg-white rounded-2xl border border-dashed border-gray-300">
+                <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-500">Try adjusting your filters or search criteria.</p>
+                <p className="text-gray-500 mb-6">We couldn't find any footwear matching your search.</p>
+                <Link href="/products" className="inline-block bg-black text-white font-bold px-6 py-3 rounded-full text-sm hover:bg-gray-800 transition">
+                  Browse All Shoes
+                </Link>
               </div>
             )}
           </div>
