@@ -26,10 +26,16 @@ export default async function ProductsPage({
   if (sort === 'price_asc') orderBy = { price: 'asc' };
   if (sort === 'price_desc') orderBy = { price: 'desc' };
 
-  const products = await prisma.product.findMany({
-    where,
-    orderBy,
-  });
+  let products: any[] = [];
+  try {
+    products = await prisma.product.findMany({
+      where,
+      orderBy,
+    });
+  } catch (err) {
+    console.error('[products] DB error:', err);
+  }
+
 
   return (
     <div className="bg-gray-50 min-h-screen pt-8 pb-24">

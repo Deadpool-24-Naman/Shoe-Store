@@ -7,7 +7,12 @@ import { ArrowLeft } from 'lucide-react';
 
 export default async function ProductDetail({ params }: { params: { id: string } }) {
   const { id } = await params;
-  const product = await prisma.product.findUnique({ where: { id } });
+  let product = null;
+  try {
+    product = await prisma.product.findUnique({ where: { id } });
+  } catch (err) {
+    console.error('[product-detail] DB error:', err);
+  }
 
   if (!product) notFound();
 
