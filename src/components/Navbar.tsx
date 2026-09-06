@@ -3,8 +3,10 @@ import Link from 'next/link';
 import { ShoppingCart, User } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 
 export default function Navbar() {
+  const { data: session } = useSession();
   const items = useCartStore((state) => state.items);
   const [mounted, setMounted] = useState(false);
 
@@ -27,7 +29,7 @@ export default function Navbar() {
           <Link href="/products?category=sports" className="hover:text-black transition-colors">Sports</Link>
         </div>
 
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-4">
           <Link 
             href="/cart" 
             className="relative p-2.5 rounded-full text-gray-700 hover:text-black hover:bg-gray-100 transition-all duration-200"
@@ -40,12 +42,18 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+          
           <Link 
-            href="/login" 
-            className="p-2.5 rounded-full text-gray-700 hover:text-black hover:bg-gray-100 transition-all duration-200"
+            href={session?.user ? "/profile" : "/login"} 
+            className="flex items-center gap-2 p-2 rounded-full text-gray-700 hover:text-black hover:bg-gray-100 transition-all duration-200"
             aria-label="User Account"
           >
             <User className="w-5 h-5" />
+            {mounted && session?.user && (
+              <span className="hidden sm:inline-block text-xs font-bold text-gray-900 max-w-[100px] truncate">
+                {session.user.name || session.user.email?.split('@')[0]}
+              </span>
+            )}
           </Link>
         </div>
       </div>
