@@ -8,7 +8,7 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "jsmith@example.com" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
@@ -16,23 +16,13 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        const normalizedEmail = credentials.email.toLowerCase().trim();
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
+          where: { email: normalizedEmail }
         });
 
         if (!user) {
-          // You might want to handle registration differently, 
-          // but for simplicity in this demo, let's auto-register them if they don't exist
-          const hashedPassword = await bcrypt.hash(credentials.password, 10);
-          const newUser = await prisma.user.create({
-            data: {
-              email: credentials.email,
-              password: hashedPassword,
-              name: credentials.email.split('@')[0],
-              role: credentials.email.includes('admin') ? 'ADMIN' : 'USER'
-            }
-          });
-          return { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role };
+          return null;
         }
 
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
