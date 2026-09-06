@@ -10,23 +10,35 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_replace_me',
 
 export async function POST(req: Request) {
   try {
+    // 1. Verify authenticated user session
     const session = await getServerSession(authOptions);
+
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: 'Authentication required. Please log in to place an order.' },
+        { status: 401 }
+      );
+    }
+
+    // 2. Fetch authenticated user from Neon database
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email.toLowerCase().trim() },
+    });
+
+    if (!user || !user.id) {
+      return NextResponse.json(
+        { error: 'Authenticated user profile not found in database.' },
+        { status: 401 }
+      );
+    }
+
+    const userId: string = user.id; // STRICTLY NON-NULL USER ID
+
     const body = await req.json();
     const { items, shippingAddress } = body;
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
-    }
-
-    // Determine logged-in user ID
-    let userId: string | null = null;
-    if (session?.user?.email) {
-      const user = await prisma.user.findUnique({
-        where: { email: session.user.email.toLowerCase().trim() },
-      });
-      if (user) {
-        userId = user.id;
-      }
     }
 
     // Calculate total price
@@ -78,10 +90,10 @@ export async function POST(req: Request) {
       }
     }
 
-    // EXPLICITLY CREATE ORDER IN NEON DATABASE
+    // 3. EXPLICITLY CREATE ORDER IN NEON DATABASE WITH STRICT USER ID
     const order = await prisma.order.create({
       data: {
-        userId,
+        userId, // Strictly non-null authenticated User ID
         total: totalAmount,
         status: 'PAID',
         items: JSON.stringify(items),
@@ -90,7 +102,7 @@ export async function POST(req: Request) {
       },
     });
 
-    console.log(`Order successfully created in database! Order ID: ${order.id}, User ID: ${userId || 'Guest'}`);
+    console.log(`Order successfully created for authenticated user! Order ID: ${order.id}, User ID: ${userId}`);
 
     return NextResponse.json({
       url: redirectUrl,

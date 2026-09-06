@@ -1,14 +1,17 @@
 'use client';
+
 import { useCartStore } from '@/lib/store';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { CreditCard, Lock, ShieldCheck, ArrowRight, MapPin } from 'lucide-react';
+import { CreditCard, Lock, ShieldCheck, ArrowRight, MapPin, UserCheck, AlertCircle } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 export default function CheckoutPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { items, getTotal } = useCartStore();
   const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
@@ -18,9 +21,49 @@ export default function CheckoutPage() {
   const [zip, setZip] = useState('');
   const [country, setCountry] = useState('United States');
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  if (!mounted) return null;
+  // Redirect to login if unauthenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login?callbackUrl=/checkout');
+    }
+  }, [status, router]);
+
+  if (!mounted || status === 'loading') {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  // Fallback view if user is unauthenticated
+  if (status === 'unauthenticated' || !session?.user) {
+    return (
+      <div className="bg-gray-50 min-h-[75vh] flex items-center justify-center py-20 px-4">
+        <div className="bg-white p-8 sm:p-10 rounded-3xl border border-gray-100 shadow-sm text-center max-w-md w-full">
+          <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-extrabold text-gray-900 mb-2">Authentication Required</h2>
+          <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+            Please log in or create an account to proceed with checkout and secure your order.
+          </p>
+          <Link
+            href="/login?callbackUrl=/checkout"
+            className="w-full inline-flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white font-bold py-4 rounded-xl transition-all shadow-lg"
+          >
+            <span>Log In to Checkout</span>
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (items.length === 0) {
     router.push('/cart');
     return null;
@@ -29,6 +72,7 @@ export default function CheckoutPage() {
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setAuthError('');
 
     const shippingAddress = {
       street: street || '123 Main Street',
@@ -49,15 +93,22 @@ export default function CheckoutPage() {
 
       const data = await response.json();
 
+      if (response.status === 401) {
+        setAuthError(data.error || 'Authentication required. Please log in.');
+        setLoading(false);
+        router.push('/login?callbackUrl=/checkout');
+        return;
+      }
+
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert('Payment process failed. Please try again.');
+        alert(data.error || 'Payment process failed. Please try again.');
         setLoading(false);
       }
     } catch (error) {
-      console.error(error);
-      alert('Checkout error occurred');
+      console.error('Checkout error:', error);
+      alert('Checkout error occurred. Please try again.');
       setLoading(false);
     }
   };
@@ -70,12 +121,19 @@ export default function CheckoutPage() {
           <p className="text-gray-500 flex items-center justify-center gap-2 text-sm font-medium">
             <Lock className="w-4 h-4 text-green-600" /> Powered by Stripe Test Gateway
           </p>
-          {session?.user && (
-            <p className="mt-2 text-sm text-blue-600 font-semibold">
-              Logged in as {session.user.name || session.user.email} (Order will be linked to your account)
-            </p>
-          )}
+          
+          <div className="mt-3 inline-flex items-center gap-2 bg-blue-50 text-blue-800 border border-blue-100 px-4 py-1.5 rounded-full text-xs font-bold">
+            <UserCheck className="w-4 h-4 text-blue-600" />
+            <span>Authenticated as {session.user.name || session.user.email}</span>
+          </div>
         </div>
+
+        {authError && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 max-w-xl mx-auto">
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+            <span>{authError}</span>
+          </div>
+        )}
 
         <form onSubmit={handleCheckout} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Left Column: Shipping & Order Summary */}
@@ -190,7 +248,7 @@ export default function CheckoutPage() {
               </h2>
 
               <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                Clicking proceed will simulate or process test payment and record your order directly in Neon Database.
+                Clicking proceed will simulate or process test payment and record your order directly in Neon Database under your user account.
               </p>
 
               <button
@@ -213,10 +271,10 @@ export default function CheckoutPage() {
 
               <div className="mt-6 p-4 bg-blue-50/60 rounded-xl border border-blue-100 text-xs text-blue-900 space-y-1">
                 <p className="font-bold flex items-center gap-1.5 text-blue-700">
-                  <ShieldCheck className="w-4 h-4" /> Secure Order Confirmation
+                  <ShieldCheck className="w-4 h-4" /> Strictly Authenticated Order
                 </p>
                 <p className="text-blue-800/80">
-                  Your order will be linked to your profile and stored in Neon Cloud Database.
+                  Your order will be linked to user ID <span className="font-mono font-bold text-blue-950">{session.user.email}</span> in Neon Database.
                 </p>
               </div>
             </div>
