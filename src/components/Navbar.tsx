@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, User, Search, Package } from 'lucide-react';
+import { ShoppingCart, User, Search, Package, Heart } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
@@ -12,9 +12,23 @@ export default function Navbar() {
   const items = useCartStore((state) => state.items);
   const [mounted, setMounted] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [wishlistCount, setWishlistCount] = useState(0);
   const router = useRouter();
 
   useEffect(() => setMounted(true), []);
+
+  // Fetch wishlist count once the client mounts and user is logged in
+  useEffect(() => {
+    if (!mounted) return;
+    if (session?.user?.email) {
+      fetch('/api/wishlist')
+        .then((res) => (res.ok ? res.json() : []))
+        .then((data) => setWishlistCount(Array.isArray(data) ? data.length : 0))
+        .catch(() => setWishlistCount(0));
+    } else {
+      setWishlistCount(0);
+    }
+  }, [mounted, session?.user?.email]);
 
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
 
@@ -30,6 +44,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-4">
+
         {/* Brand Logo */}
         <Link href="/" className="text-2xl font-black tracking-tighter text-gray-900 hover:opacity-80 transition-opacity shrink-0">
           KICKS<span className="text-blue-600">.</span>
@@ -62,7 +77,24 @@ export default function Navbar() {
 
         {/* Action Icons */}
         <div className="flex items-center gap-3 shrink-0">
-          {/* Cart Icon */}
+
+          {/* ❤️ Wishlist Icon — always visible, heart fills red when items exist */}
+          <Link
+            href="/wishlist"
+            className="relative p-2.5 rounded-full text-gray-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+            aria-label="Wishlist"
+          >
+            <Heart
+              className={`w-5 h-5 transition-colors ${mounted && wishlistCount > 0 ? 'fill-red-500 text-red-500' : ''}`}
+            />
+            {mounted && wishlistCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-extrabold rounded-full w-5 h-5 flex items-center justify-center shadow-md">
+                {wishlistCount}
+              </span>
+            )}
+          </Link>
+
+          {/* 🛒 Cart Icon */}
           <Link
             href="/cart"
             className="relative p-2.5 rounded-full text-gray-700 hover:text-black hover:bg-gray-100 transition-all duration-200"
@@ -76,7 +108,7 @@ export default function Navbar() {
             )}
           </Link>
 
-          {/* Orders Link (for logged-in users) */}
+          {/* 📦 Orders Link — logged-in users only */}
           {mounted && session?.user && (
             <Link
               href="/orders"
@@ -88,9 +120,9 @@ export default function Navbar() {
             </Link>
           )}
 
-          {/* User Account / Profile */}
+          {/* 👤 User Account / Profile */}
           <Link
-            href={session?.user ? "/profile" : "/login"}
+            href={session?.user ? '/profile' : '/login'}
             className="flex items-center gap-2 p-2 rounded-full text-gray-700 hover:text-black hover:bg-gray-100 transition-all duration-200"
             aria-label="User Account"
           >
@@ -101,6 +133,7 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+
         </div>
       </div>
     </nav>

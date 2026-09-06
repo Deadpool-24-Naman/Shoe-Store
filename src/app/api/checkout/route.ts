@@ -102,6 +102,24 @@ export async function POST(req: Request) {
       },
     });
 
+    // Decrement stock for each ordered item
+    await Promise.all(
+      items.map(async (item: any) => {
+        await prisma.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.quantity } },
+        });
+      })
+    );
+
+    // Send order confirmation email
+    try {
+      const { sendOrderConfirmation } = await import('@/lib/email');
+      await sendOrderConfirmation({ orderId: order.id, total: totalAmount, items, shippingAddress }, user.email);
+    } catch (emailErr) {
+      console.warn('Failed to send order confirmation email:', emailErr);
+    }
+
     console.log(`Order successfully created for authenticated user! Order ID: ${order.id}, User ID: ${userId}`);
 
     return NextResponse.json({

@@ -132,6 +132,30 @@ export default async function ProductsPage({
                   return (
                     <Link key={product.id} href={`/products/${product.id}`} className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
                       <div className="relative h-64 overflow-hidden bg-gray-100 p-4">
+                        {/* Wishlist Heart Toggle */}
+                        <button
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            const method = 'POST';
+                            try {
+                              await fetch('/api/wishlist', {
+                                method,
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ productId: product.id }),
+                              });
+                            } catch (err) {
+                              console.error('Wishlist error', err);
+                            }
+                          }}
+                          className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow transition-colors text-gray-400 hover:text-red-600"
+                        >
+                          🤍
+                        </button>
+                        {/* Stock Badge */}
+                        {product.stock === 0 && (
+                          <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">Out of Stock</div>
+                        )}
                         <img 
                           src={images[0]} 
                           alt={product.name} 

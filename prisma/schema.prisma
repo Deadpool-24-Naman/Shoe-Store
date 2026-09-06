@@ -9,39 +9,66 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   name      String?
-  email     String   @unique
+  email     String     @unique
   password  String
-  role      String   @default("USER") // "USER" or "ADMIN"
+  role      String     @default("USER") // "USER" or "ADMIN"
   orders    Order[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  wishlists Wishlist[]
+  reviews   Review[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Product {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
   description String
   price       Float
-  images      String   // Storing JSON stringified array of image URLs
-  category    String   // men, women, kids, sports
+  images      String     // Storing JSON stringified array of image URLs
+  category    String     // men, women, kids, sports
   brand       String
-  sizes       String   // Storing JSON stringified array of sizes
-  stock       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  sizes       String     // Storing JSON stringified array of sizes
+  stock       Int        @default(10)
+  wishlists   Wishlist[]
+  reviews     Review[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Order {
   id              String   @id @default(cuid())
   userId          String?
-  user            User?    @relation(fields: [userId], references: [id])
+  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   total           Float
-  status          String   @default("PENDING") // PENDING, PAID, SHIPPED, DELIVERED
+  status          String   @default("PAID") // PENDING, PAID, PROCESSING, SHIPPED, DELIVERED
   items           String   // JSON stringified array of cart items
   stripeSessionId String?
   shippingAddress String?  // JSON stringified address object
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rating    Int      // 1 to 5 stars
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

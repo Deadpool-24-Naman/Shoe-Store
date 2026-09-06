@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useCartStore } from '@/lib/store';
 import { ShoppingCart } from 'lucide-react';
 
-export default function AddToCart({ product }: { product: any }) {
+export default function AddToCart({ product, stock }: { product: any; stock: number }) {
   const sizes = JSON.parse(product.sizes);
   const [selectedSize, setSelectedSize] = useState<string>(sizes[0]);
   const addItem = useCartStore(state => state.addItem);
@@ -47,11 +47,12 @@ export default function AddToCart({ product }: { product: any }) {
       </div>
       
       <button 
+        disabled={stock <= 0}
         onClick={handleAddToCart}
-        className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-5 px-8 rounded-full flex items-center justify-center gap-3 transition-all duration-200 shadow-xl shadow-blue-600/20"
+        className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-5 px-8 rounded-full flex items-center justify-center gap-3 transition-all duration-200 shadow-xl shadow-blue-600/20 disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         <ShoppingCart className="w-5 h-5" />
-        Add to Cart
+        {stock > 0 ? 'Add to Cart' : 'Out of Stock'}
       </button>
     </div>
   );
