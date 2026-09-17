@@ -3,15 +3,17 @@
 import { useCartStore } from '@/lib/store';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { CreditCard, Lock, ShieldCheck, ArrowRight, MapPin, UserCheck, AlertCircle, Tag, Check, X, Flame } from 'lucide-react';
+import { CreditCard, Lock, ShieldCheck, ArrowRight, MapPin, UserCheck, AlertCircle, Tag, Check, X, Flame, Smartphone } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import PayViaUPIModal from '@/components/PayViaUPIModal';
 
 function CheckoutContent() {
   const { data: session, status } = useSession();
   const { items, getTotal } = useCartStore();
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [upiModalOpen, setUpiModalOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialCoupon = searchParams.get('coupon') || '';
@@ -140,8 +142,7 @@ function CheckoutContent() {
     return null;
   }
 
-  const handleCheckout = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCheckout = async () => {
     setLoading(true);
     setAuthError('');
 
@@ -173,8 +174,20 @@ function CheckoutContent() {
         return;
       }
 
-      if (data.url) {
-        window.location.href = data.url;
+      if (data.orderId) {
+        // Store order context in sessionStorage for the success page
+        sessionStorage.setItem(
+          'kicks_last_order',
+          JSON.stringify({
+            orderId: data.orderId,
+            total: data.total,
+            discountAmount: data.discountAmount || 0,
+            couponCode: data.couponCode || null,
+            items,
+            shippingAddress,
+          })
+        );
+        router.push(`/order-success?orderId=${data.orderId}`);
       } else {
         alert(data.error || 'Payment process failed. Please try again.');
         setLoading(false);
@@ -198,7 +211,7 @@ function CheckoutContent() {
           </div>
           <h1 className="text-4xl font-black uppercase text-zinc-900 mb-2">Checkout Details</h1>
           <p className="text-zinc-500 flex items-center justify-center gap-1.5 text-xs font-bold">
-            <Lock className="w-4 h-4 text-emerald-600" /> Powered by Stripe Test Gateway
+            <Lock className="w-4 h-4 text-emerald-600" /> Secure UPI / Card Payment Gateway
           </p>
           
           <div className="mt-3 inline-flex items-center gap-2 bg-white border-2 border-black px-4 py-1.5 rounded-full text-xs font-black shadow-sm">
@@ -214,7 +227,7 @@ function CheckoutContent() {
           </div>
         )}
 
-        <form onSubmit={handleCheckout} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Left Column: Shipping & Order Summary */}
           <div className="lg:col-span-7 space-y-6">
@@ -395,17 +408,19 @@ function CheckoutContent() {
             {/* Payment Summary */}
             <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-zinc-200 shadow-sm sticky top-28">
               <h2 className="text-xl font-black uppercase text-zinc-900 mb-4 flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-black" /> Payment Simulation
+                <CreditCard className="w-5 h-5 text-black" /> Payment
               </h2>
 
-              <p className="text-zinc-500 text-xs font-medium mb-6 leading-relaxed">
-                Clicking complete order will record your order in Neon Database under your user account with authenticated session security.
+              <p className="text-zinc-500 text-xs font-medium mb-5 leading-relaxed">
+                Choose how you want to pay. Your order will be confirmed instantly upon payment.
               </p>
 
+              {/* Primary CTA: Pay via UPI / Cards */}
               <button
                 disabled={loading}
-                type="submit"
-                className="w-full bg-[#101820] hover:bg-black active:scale-[0.98] text-[#FEE715] font-black uppercase tracking-wider py-4 rounded-2xl flex items-center justify-center gap-2 transition-all border-2 border-black shadow-[4px_4px_0px_0px_rgba(254,231,21,1)] hover:shadow-[2px_2px_0px_0px_rgba(254,231,21,1)] disabled:bg-zinc-400"
+                type="button"
+                onClick={() => setUpiModalOpen(true)}
+                className="w-full bg-[#101820] hover:bg-black active:scale-[0.98] text-[#FEE715] font-black uppercase tracking-wider py-4 rounded-2xl flex items-center justify-center gap-2 transition-all border-2 border-black shadow-[4px_4px_0px_0px_rgba(254,231,21,1)] hover:shadow-[2px_2px_0px_0px_rgba(254,231,21,1)] disabled:bg-zinc-400 mb-3"
               >
                 {loading ? (
                   <div className="flex items-center gap-2">
@@ -414,13 +429,22 @@ function CheckoutContent() {
                   </div>
                 ) : (
                   <>
-                    <span>Complete Order (${finalTotal.toFixed(2)})</span>
-                    <ArrowRight className="w-5 h-5" />
+                    <Smartphone className="w-5 h-5" />
+                    <span>Pay via UPI / Cards (${finalTotal.toFixed(2)})</span>
                   </>
                 )}
               </button>
 
-              <div className="mt-6 p-4 bg-zinc-50 rounded-2xl border border-zinc-200 text-xs text-zinc-800 space-y-1">
+              {/* Method chips */}
+              <div className="flex gap-1.5 flex-wrap mb-5">
+                {['GPay', 'PhonePe', 'Paytm', 'Visa', 'Mastercard', 'Net Banking'].map((m) => (
+                  <span key={m} className="text-[9px] font-black bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded-md text-zinc-500 uppercase">
+                    {m}
+                  </span>
+                ))}
+              </div>
+
+              <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-200 text-xs text-zinc-800 space-y-1">
                 <p className="font-black flex items-center gap-1.5 text-zinc-900">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" /> Strictly Authenticated Order
                 </p>
@@ -432,7 +456,15 @@ function CheckoutContent() {
 
           </div>
 
-        </form>
+        </div>
+
+        {/* UPI / Card Payment Modal */}
+        <PayViaUPIModal
+          isOpen={upiModalOpen}
+          onClose={() => setUpiModalOpen(false)}
+          onPaymentSuccess={handleCheckout}
+          totalAmount={finalTotal}
+        />
       </div>
     </div>
   );
