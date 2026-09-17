@@ -53,7 +53,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white text-xs font-black uppercase tracking-widest mb-4">Support</h4>
             <ul className="space-y-2.5 text-xs font-bold uppercase tracking-wider text-zinc-400">
-              <li><Link href="/orders" className="hover:text-[#FEE715] transition-colors">Track Order</Link></li>
+              <li><Link href="/track-order" className="hover:text-[#FEE715] transition-colors">Track Order</Link></li>
               <li><Link href="/wishlist" className="hover:text-[#FEE715] transition-colors">My Wishlist</Link></li>
               <li><span className="text-zinc-500">7-Day Free Returns</span></li>
               <li><span className="text-zinc-500">100% Genuine Guarantee</span></li>

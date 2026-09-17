@@ -17,6 +17,7 @@ import {
   X,
   Flame,
 } from 'lucide-react';
+import OrderTracker from '@/components/OrderTracker';
 
 interface OrderItem {
   id: string;
@@ -253,6 +254,12 @@ function OrderSuccessContent() {
 
           {/* Left: Items + Delivery */}
           <div className="lg:col-span-7 space-y-5">
+
+            {/* Live Order Tracker */}
+            <OrderTracker
+              orderId={displayOrderId}
+              createdAt={order?.createdAt || new Date().toISOString()}
+            />
 
             {/* Ordered Items */}
             <div className="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-6">
