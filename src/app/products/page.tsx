@@ -3,8 +3,8 @@ export const dynamic = 'force-dynamic';
 import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { ArrowRight, Filter, Search, X } from 'lucide-react';
-import WishlistButton from '@/components/WishlistButton';
+import { Filter, Search, X, Flame, Sparkles } from 'lucide-react';
+import ProductCard from '@/components/ProductCard';
 
 interface ProductsPageProps {
   searchParams?: Promise<{ category?: string; brand?: string; sort?: string; search?: string; q?: string }> | { category?: string; brand?: string; sort?: string; search?: string; q?: string };
@@ -45,43 +45,49 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
   const safeProducts = Array.isArray(products) ? products : [];
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-8 pb-24">
+    <div className="bg-[#FAFAFA] min-h-screen pt-8 pb-24 text-zinc-900">
       <div className="container mx-auto px-4">
         
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-3 capitalize">
-            {searchQuery 
-              ? `Results for "${searchQuery}"`
-              : category ? `${category} Footwear` : 'All Footwear'}
-          </h1>
-          <div className="flex items-center gap-3">
-            <p className="text-gray-500 text-lg">
-              Showing {safeProducts.length} {safeProducts.length === 1 ? 'product' : 'products'}
+        {/* Header Banner */}
+        <div className="mb-10 bg-white p-6 sm:p-8 rounded-3xl border-2 border-zinc-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 bg-[#FEE715] text-black text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md mb-2">
+              <Flame className="w-3.5 h-3.5 fill-black" />
+              STREET DROP CATALOG
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-zinc-900">
+              {searchQuery 
+                ? `Results for "${searchQuery}"`
+                : category ? `${category} Collection` : 'All Street Footwear'}
+            </h1>
+            <p className="text-zinc-500 font-bold text-sm mt-1">
+              Showing {safeProducts.length} {safeProducts.length === 1 ? 'drip item' : 'drip items'} ready to cop
             </p>
-            {searchQuery && (
-              <Link 
-                href="/products" 
-                className="inline-flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-bold px-3 py-1 rounded-full transition-colors"
-              >
-                Clear Search <X className="w-3 h-3" />
-              </Link>
-            )}
           </div>
+
+          {searchQuery && (
+            <Link 
+              href="/products" 
+              className="inline-flex items-center gap-1.5 bg-black text-[#FEE715] hover:bg-zinc-800 text-xs font-black px-4 py-2.5 rounded-full transition-colors border border-[#FEE715]/40"
+            >
+              Clear Search Filter <X className="w-3.5 h-3.5" />
+            </Link>
+          )}
         </div>
         
-        <div className="flex flex-col lg:flex-row gap-12">
+        <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <div className="w-full lg:w-72 shrink-0">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
-              <div className="flex items-center gap-2 mb-6 text-gray-900">
+            <div className="bg-white p-6 rounded-3xl shadow-sm border-2 border-zinc-200 sticky top-24">
+              <div className="flex items-center gap-2 mb-6 text-zinc-900 pb-4 border-b border-zinc-100">
                 <Filter className="w-5 h-5" />
-                <h3 className="font-bold text-lg">Filters & Sort</h3>
+                <h3 className="font-black text-lg uppercase tracking-tight">Filters &amp; Sort</h3>
               </div>
               
+              {/* Category Filter */}
               <div className="mb-8">
-                <h4 className="font-semibold text-gray-900 mb-4 uppercase text-sm tracking-wider">Categories</h4>
-                <ul className="space-y-3">
+                <h4 className="font-black text-zinc-900 mb-3 uppercase text-xs tracking-wider">Categories</h4>
+                <ul className="space-y-2">
                   {['All', 'Men', 'Women', 'Kids', 'Sports'].map((cat) => {
                     const catValue = cat.toLowerCase();
                     const isActive = (cat === 'All' && !category) || category === catValue;
@@ -96,7 +102,11 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
                       <li key={cat}>
                         <Link 
                           href={href} 
-                          className={`block transition-colors ${isActive ? "font-bold text-blue-600" : "text-gray-600 hover:text-black"}`}
+                          className={`block px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+                            isActive 
+                              ? "bg-[#FEE715] text-black shadow-sm font-black" 
+                              : "text-zinc-600 hover:bg-zinc-100 hover:text-black"
+                          }`}
                         >
                           {cat}
                         </Link>
@@ -105,10 +115,40 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
                   })}
                 </ul>
               </div>
+
+              {/* Special Drops Filter */}
+              <div className="mb-8 pt-4 border-t border-zinc-100">
+                <h4 className="font-black text-zinc-900 mb-3 uppercase text-xs tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-zinc-900" /> Curated Drops
+                </h4>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Chunky Sneakers', search: 'chunky' },
+                    { label: 'Anime Kicks', search: 'anime' },
+                    { label: 'Daily Beaties', search: 'daily' },
+                  ].map((drop) => {
+                    const isActive = searchQuery.toLowerCase() === drop.search;
+                    return (
+                      <Link
+                        key={drop.label}
+                        href={`/products?search=${drop.search}`}
+                        className={`block px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+                          isActive
+                            ? 'bg-black text-[#FEE715]'
+                            : 'text-zinc-600 hover:bg-zinc-100 hover:text-black'
+                        }`}
+                      >
+                        {drop.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
               
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-4 uppercase text-sm tracking-wider">Sort By</h4>
-                <div className="space-y-3 flex flex-col">
+              {/* Sort By Filter */}
+              <div className="pt-4 border-t border-zinc-100">
+                <h4 className="font-black text-zinc-900 mb-3 uppercase text-xs tracking-wider">Sort By</h4>
+                <div className="space-y-2 flex flex-col">
                   {[
                     { label: 'Newest Arrivals', value: 'newest' },
                     { label: 'Price: Low to High', value: 'price_asc' },
@@ -125,7 +165,11 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
                       <Link 
                         key={option.value}
                         href={`/products?${sortParams.toString()}`} 
-                        className={`block transition-colors ${isActive ? "font-bold text-blue-600" : "text-gray-600 hover:text-black"}`}
+                        className={`block px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+                          isActive 
+                            ? "bg-zinc-900 text-white shadow-sm" 
+                            : "text-zinc-600 hover:bg-zinc-100 hover:text-black"
+                        }`}
                       >
                         {option.label}
                       </Link>
@@ -140,63 +184,24 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
           <div className="flex-1">
             {safeProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {safeProducts?.map((product) => {
-                  let images = ['/placeholder.png'];
-                  try {
-                    images = JSON.parse(product?.images || '[]');
-                  } catch {
-                    images = ['/placeholder.png'];
-                  }
-                  const firstImage = images?.[0] || '/placeholder.png';
-                  const isOutOfStock = (product?.stock ?? 0) <= 0;
-                  const price = typeof product?.price === 'number' ? product.price.toFixed(2) : '0.00';
-
-                  return (
-                    <div key={product.id} className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col relative">
-                      <div className="relative h-64 overflow-hidden bg-gray-100 p-4">
-                        {/* Wishlist Client Button */}
-                        <WishlistButton productId={product.id} />
-
-                        {/* Stock Badge */}
-                        {isOutOfStock && (
-                          <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow z-10">
-                            Out of Stock
-                          </div>
-                        )}
-
-                        <Link href={`/products/${product.id}`} className="block w-full h-full">
-                          <img 
-                            src={firstImage} 
-                            alt={product?.name || 'Shoe'} 
-                            className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-500 mix-blend-multiply" 
-                          />
-                        </Link>
-                      </div>
-
-                      <Link href={`/products/${product.id}`} className="p-6 flex-1 flex flex-col justify-between bg-white">
-                        <div>
-                          <p className="text-blue-600 text-xs font-bold uppercase tracking-wider mb-2">{product?.brand || 'Brand'}</p>
-                          <h3 className="font-bold text-xl mb-1 text-gray-900 group-hover:text-blue-600 transition-colors">{product?.name || 'Footwear'}</h3>
-                          <p className="text-gray-500 text-sm mb-4 line-clamp-2">{product?.description || ''}</p>
-                        </div>
-                        <div className="flex items-center justify-between mt-6">
-                          <p className="font-bold text-xl">${price}</p>
-                          <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
-                            <ArrowRight className="w-5 h-5" />
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-                  );
-                })}
+                {safeProducts?.map((product, idx) => (
+                  <ProductCard key={product.id} product={product} index={idx} />
+                ))}
               </div>
             ) : (
-              <div className="text-center py-32 bg-white rounded-2xl border border-dashed border-gray-300">
-                <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-500 mb-6">We couldn't find any footwear matching your search.</p>
-                <Link href="/products" className="inline-block bg-black text-white font-bold px-6 py-3 rounded-full text-sm hover:bg-gray-800 transition">
-                  Browse All Shoes
+              <div className="text-center py-28 bg-white rounded-3xl border-2 border-dashed border-zinc-300 p-8">
+                <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-4 text-zinc-400">
+                  <Search className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-black uppercase tracking-tight text-zinc-900 mb-2">No matching kicks found</h3>
+                <p className="text-zinc-500 font-medium text-sm mb-6 max-w-sm mx-auto">
+                  We couldn't find any footwear matching your filters. Try clearing your search or explore our fresh collections.
+                </p>
+                <Link
+                  href="/products"
+                  className="inline-block bg-[#FEE715] hover:bg-yellow-400 text-black font-black uppercase tracking-wider px-8 py-3.5 rounded-full text-xs transition shadow-md"
+                >
+                  Browse All Sneakers
                 </Link>
               </div>
             )}
@@ -211,8 +216,8 @@ export default function ProductsPage(props: ProductsPageProps) {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400"></div>
         </div>
       }
     >
