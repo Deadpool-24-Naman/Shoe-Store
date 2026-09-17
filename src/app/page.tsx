@@ -4,6 +4,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { ArrowRight, Flame, Sparkles, Zap, ShieldCheck, Truck, RefreshCcw, Tag } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import CountdownBanner from "@/components/CountdownBanner";
 
 const FEATURED_COLLECTIONS = [
   {
@@ -59,6 +60,9 @@ export default async function Home() {
   return (
     <div className="bg-[#FAFAFA] text-zinc-900 overflow-hidden font-sans">
       
+      {/* Sleek Flash Sale Countdown Timer Banner */}
+      <CountdownBanner />
+
       {/* Streetwear Announcement Ticker */}
       <div className="bg-[#101820] text-[#FEE715] py-2.5 px-4 font-black text-xs uppercase tracking-widest overflow-hidden border-b-2 border-[#FEE715]/40 flex items-center justify-around flex-wrap gap-4 shadow-sm">
         <span className="flex items-center gap-1.5">

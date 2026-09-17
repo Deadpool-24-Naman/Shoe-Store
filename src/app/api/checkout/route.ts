@@ -35,17 +35,21 @@ export async function POST(req: Request) {
     const userId: string = user.id; // STRICTLY NON-NULL USER ID
 
     const body = await req.json();
-    const { items, shippingAddress } = body;
+    const { items, shippingAddress, couponCode, discountAmount = 0 } = body;
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
     }
 
-    // Calculate total price
-    const totalAmount = items.reduce(
+    // Calculate subtotal price
+    const subtotal = items.reduce(
       (sum: number, item: any) => sum + item.price * item.quantity,
       0
     );
+
+    // Calculate final total with discount applied
+    const safeDiscount = Math.max(0, Math.min(Number(discountAmount) || 0, subtotal));
+    const totalAmount = Math.max(0, Number((subtotal - safeDiscount).toFixed(2)));
 
     const origin =
       req.headers.get('origin') ||
@@ -90,7 +94,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. EXPLICITLY CREATE ORDER IN NEON DATABASE WITH STRICT USER ID
+    // 3. EXPLICITLY CREATE ORDER IN NEON DATABASE WITH STRICT USER ID & DISCOUNTED TOTAL
     const order = await prisma.order.create({
       data: {
         userId, // Strictly non-null authenticated User ID
@@ -105,10 +109,14 @@ export async function POST(req: Request) {
     // Decrement stock for each ordered item
     await Promise.all(
       items.map(async (item: any) => {
-        await prisma.product.update({
-          where: { id: item.productId },
-          data: { stock: { decrement: item.quantity } },
-        });
+        try {
+          await prisma.product.update({
+            where: { id: item.productId },
+            data: { stock: { decrement: item.quantity } },
+          });
+        } catch (stockErr) {
+          console.warn(`Failed to decrement stock for product ${item.productId}:`, stockErr);
+        }
       })
     );
 
@@ -120,13 +128,15 @@ export async function POST(req: Request) {
       console.warn('Failed to send order confirmation email:', emailErr);
     }
 
-    console.log(`Order successfully created for authenticated user! Order ID: ${order.id}, User ID: ${userId}`);
+    console.log(`Order successfully created! Order ID: ${order.id}, User ID: ${userId}, Total: $${totalAmount}${couponCode ? ` (Coupon: ${couponCode})` : ''}`);
 
     return NextResponse.json({
       url: redirectUrl,
       orderId: order.id,
       stripeSessionId,
       total: totalAmount,
+      discountAmount: safeDiscount,
+      couponCode,
     });
   } catch (error: any) {
     console.error('Checkout API Error:', error);
