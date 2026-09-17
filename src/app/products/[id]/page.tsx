@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import AddToCart from '@/components/AddToCart';
@@ -5,8 +7,10 @@ import ReviewSection from '@/components/ReviewSection';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-export default async function ProductDetail({ params }: { params: { id: string } }) {
-  const { id } = await params;
+export default async function ProductDetail({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
+
   let product = null;
   try {
     product = await prisma.product.findUnique({ where: { id } });
@@ -16,8 +20,14 @@ export default async function ProductDetail({ params }: { params: { id: string }
 
   if (!product) notFound();
 
-  const images = JSON.parse(product.images);
-  const isOutOfStock = product.stock <= 0;
+  let images = ['/placeholder.png'];
+  try {
+    images = JSON.parse(product.images || '[]');
+  } catch {
+    images = ['/placeholder.png'];
+  }
+  const firstImage = images?.[0] || '/placeholder.png';
+  const isOutOfStock = (product.stock ?? 0) <= 0;
 
   return (
     <div className="bg-white min-h-screen pt-8 pb-24">
@@ -35,8 +45,8 @@ export default async function ProductDetail({ params }: { params: { id: string }
           <div className="w-full lg:w-1/2">
             <div className="aspect-[4/3] lg:aspect-square bg-[#F7F7F7] rounded-[2rem] overflow-hidden p-8 relative flex items-center justify-center group">
               <img
-                src={images[0]}
-                alt={product.name}
+                src={firstImage}
+                alt={product.name || 'Shoe'}
                 className="w-full h-full object-contain mix-blend-multiply transform group-hover:scale-105 transition-transform duration-700 ease-out"
               />
               {/* Out of Stock Overlay Badge */}
@@ -62,7 +72,7 @@ export default async function ProductDetail({ params }: { params: { id: string }
             <h1 className="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
               {product.name}
             </h1>
-            <p className="text-3xl font-light text-gray-900 mb-6">${product.price.toFixed(2)}</p>
+            <p className="text-3xl font-light text-gray-900 mb-6">${(product.price ?? 0).toFixed(2)}</p>
 
             {/* Stock Status */}
             <div className="flex items-center gap-2 mb-6 text-sm font-medium">

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
@@ -11,10 +13,18 @@ const CATEGORIES = [
 ];
 
 export default async function Home() {
-  const featuredProducts = await prisma.product.findMany({
-    take: 4,
-    orderBy: { createdAt: 'desc' }
-  });
+  let featuredProducts: any[] = [];
+  try {
+    featuredProducts = await prisma.product.findMany({
+      take: 4,
+      orderBy: { createdAt: 'desc' }
+    });
+  } catch (err) {
+    console.error('[home] DB error:', err);
+    featuredProducts = [];
+  }
+
+  const safeFeatured = Array.isArray(featuredProducts) ? featuredProducts : [];
 
   return (
     <div>
@@ -93,25 +103,33 @@ export default async function Home() {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product) => {
-              const images = JSON.parse(product.images);
+            {safeFeatured.map((product) => {
+              let images = ['/placeholder.png'];
+              try {
+                images = JSON.parse(product?.images || '[]');
+              } catch {
+                images = ['/placeholder.png'];
+              }
+              const firstImage = images?.[0] || '/placeholder.png';
+              const price = typeof product?.price === 'number' ? product.price.toFixed(2) : '0.00';
+
               return (
                 <Link key={product.id} href={`/products/${product.id}`} className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
                   <div className="relative h-72 overflow-hidden bg-gray-100 p-4">
                     <img 
-                      src={images[0]} 
-                      alt={product.name} 
+                      src={firstImage} 
+                      alt={product?.name || 'Shoe'} 
                       className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-500 mix-blend-multiply" 
                     />
                   </div>
                   <div className="p-6 flex-1 flex flex-col justify-between bg-white">
                     <div>
-                      <p className="text-blue-600 text-xs font-bold uppercase tracking-wider mb-2">{product.brand}</p>
-                      <h3 className="font-bold text-xl mb-1 text-gray-900 group-hover:text-blue-600 transition-colors">{product.name}</h3>
-                      <p className="text-gray-500 text-sm mb-4 line-clamp-2">{product.description}</p>
+                      <p className="text-blue-600 text-xs font-bold uppercase tracking-wider mb-2">{product?.brand || 'Brand'}</p>
+                      <h3 className="font-bold text-xl mb-1 text-gray-900 group-hover:text-blue-600 transition-colors">{product?.name || 'Footwear'}</h3>
+                      <p className="text-gray-500 text-sm mb-4 line-clamp-2">{product?.description || ''}</p>
                     </div>
                     <div className="flex items-center justify-between mt-auto">
-                      <p className="font-bold text-xl">${product.price.toFixed(2)}</p>
+                      <p className="font-bold text-xl">${price}</p>
                       <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
                         <ArrowRight className="w-5 h-5" />
                       </div>
