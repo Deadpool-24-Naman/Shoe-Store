@@ -16,8 +16,12 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
   const searchQuery = (search || q || '').trim();
 
   const where: any = {};
-  if (category) where.category = category;
-  if (brand) where.brand = brand;
+  if (category && category.toLowerCase() !== 'all') {
+    where.category = { contains: category, mode: 'insensitive' };
+  }
+  if (brand) {
+    where.brand = { contains: brand, mode: 'insensitive' };
+  }
   if (searchQuery) {
     where.OR = [
       { name: { contains: searchQuery, mode: 'insensitive' } },

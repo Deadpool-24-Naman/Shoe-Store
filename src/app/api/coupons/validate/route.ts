@@ -21,6 +21,18 @@ const AVAILABLE_COUPONS: Record<string, CouponDefinition> = {
     value: 15,
     description: '15% Streetwear VIP Club discount',
   },
+  SPIN20: {
+    code: 'SPIN20',
+    type: 'percentage',
+    value: 20,
+    description: '20% Spin-the-Wheel Winner discount',
+  },
+  FREESHIP: {
+    code: 'FREESHIP',
+    type: 'fixed',
+    value: 15,
+    description: 'Free Express Shipping & $15 bonus off',
+  },
   STREET20: {
     code: 'STREET20',
     type: 'percentage',
@@ -62,7 +74,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           valid: false,
-          error: `Coupon code "${normalizedCode}" is invalid or expired. Try "FIRST10" or "DRIP15".`,
+          error: `Coupon code "${normalizedCode}" is invalid or expired. Try "DRIP15", "SPIN20", or "FIRST10".`,
         },
         { status: 400 }
       );
