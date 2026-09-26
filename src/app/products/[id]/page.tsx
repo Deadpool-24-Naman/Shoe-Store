@@ -23,9 +23,13 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
 
   let images = ['/placeholder.png'];
   try {
-    images = JSON.parse(product.images || '[]');
+    if (product.images?.startsWith('[')) {
+      images = JSON.parse(product.images);
+    } else if (product.images) {
+      images = [product.images];
+    }
   } catch {
-    images = ['/placeholder.png'];
+    images = product.images ? [product.images] : ['/placeholder.png'];
   }
   const firstImage = images?.[0] || '/placeholder.png';
   const isOutOfStock = (product.stock ?? 0) <= 0;
