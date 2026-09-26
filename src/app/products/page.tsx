@@ -3,12 +3,25 @@ export const dynamic = 'force-dynamic';
 import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Filter, Search, X, Flame, Sparkles } from 'lucide-react';
+import { Filter, Search, X, Flame, Sparkles, Tag, Check } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 
 interface ProductsPageProps {
   searchParams?: Promise<{ category?: string; brand?: string; sort?: string; search?: string; q?: string }> | { category?: string; brand?: string; sort?: string; search?: string; q?: string };
 }
+
+const POPULAR_BRANDS = [
+  'All',
+  'Nike',
+  'Jordan',
+  'Adidas',
+  'Puma',
+  'New Balance',
+  'Vans',
+  'Converse',
+  'Asics',
+  'Fila',
+];
 
 async function ProductsContent({ searchParams }: ProductsPageProps) {
   const resolvedParams = searchParams ? await searchParams : {};
@@ -19,7 +32,7 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
   if (category && category.toLowerCase() !== 'all') {
     where.category = { contains: category, mode: 'insensitive' };
   }
-  if (brand) {
+  if (brand && brand.toLowerCase() !== 'all') {
     where.brand = { contains: brand, mode: 'insensitive' };
   }
   if (searchQuery) {
@@ -47,56 +60,152 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
   }
 
   const safeProducts = Array.isArray(products) ? products : [];
+  const hasActiveFilters = Boolean(
+    (category && category.toLowerCase() !== 'all') ||
+    (brand && brand.toLowerCase() !== 'all') ||
+    searchQuery
+  );
+
+  // Derive title
+  const getHeaderTitle = () => {
+    if (searchQuery) return `Results for "${searchQuery}"`;
+    if (brand && category) return `${brand} • ${category} Footwear`;
+    if (brand && brand.toLowerCase() !== 'all') return `${brand} Collection`;
+    if (category && category.toLowerCase() !== 'all') return `${category} Collection`;
+    return 'All Street Footwear';
+  };
 
   return (
     <div className="bg-[#FAFAFA] min-h-screen pt-8 pb-24 text-zinc-900">
       <div className="container mx-auto px-4">
         
         {/* Header Banner */}
-        <div className="mb-10 bg-white p-6 sm:p-8 rounded-3xl border-2 border-zinc-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="mb-8 bg-white p-6 sm:p-8 rounded-3xl border-2 border-zinc-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 bg-[#FEE715] text-black text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md mb-2">
               <Flame className="w-3.5 h-3.5 fill-black" />
               STREET DROP CATALOG
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-zinc-900">
-              {searchQuery 
-                ? `Results for "${searchQuery}"`
-                : category ? `${category} Collection` : 'All Street Footwear'}
+              {getHeaderTitle()}
             </h1>
             <p className="text-zinc-500 font-bold text-sm mt-1">
               Showing {safeProducts.length} {safeProducts.length === 1 ? 'drip item' : 'drip items'} ready to cop
             </p>
           </div>
 
-          {searchQuery && (
+          {hasActiveFilters && (
             <Link 
               href="/products" 
-              className="inline-flex items-center gap-1.5 bg-black text-[#FEE715] hover:bg-zinc-800 text-xs font-black px-4 py-2.5 rounded-full transition-colors border border-[#FEE715]/40"
+              className="inline-flex items-center gap-1.5 bg-black text-[#FEE715] hover:bg-zinc-800 text-xs font-black px-4 py-2.5 rounded-full transition-colors border border-[#FEE715]/40 shrink-0"
             >
-              Clear Search Filter <X className="w-3.5 h-3.5" />
+              Clear All Filters <X className="w-3.5 h-3.5" />
             </Link>
           )}
+        </div>
+
+        {/* Quick Brand Badges Bar (Horizontal Scrolling on mobile) */}
+        <div className="mb-8 bg-white p-3 sm:p-4 rounded-2xl border-2 border-zinc-200 shadow-sm overflow-x-auto">
+          <div className="flex items-center gap-2 min-w-max">
+            <span className="text-xs font-black uppercase text-zinc-400 mr-2 flex items-center gap-1">
+              <Tag className="w-3.5 h-3.5" /> Brands:
+            </span>
+            {POPULAR_BRANDS.map((b) => {
+              const brandValue = b.toLowerCase();
+              const isBrandActive = (b === 'All' && !brand) || (brand && brand.toLowerCase() === brandValue);
+              
+              const params = new URLSearchParams();
+              if (b !== 'All') params.set('brand', b);
+              if (category) params.set('category', category);
+              if (searchQuery) params.set('search', searchQuery);
+              if (sort) params.set('sort', sort);
+
+              const href = params.toString() ? `/products?${params.toString()}` : '/products';
+
+              return (
+                <Link
+                  key={b}
+                  href={href}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all border ${
+                    isBrandActive
+                      ? 'bg-[#101820] text-[#FEE715] border-black shadow-sm scale-105'
+                      : 'bg-zinc-100 text-zinc-700 border-zinc-200 hover:bg-zinc-200 hover:text-black'
+                  }`}
+                >
+                  {b}
+                </Link>
+              );
+            })}
+          </div>
         </div>
         
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <div className="w-full lg:w-72 shrink-0">
-            <div className="bg-white p-6 rounded-3xl shadow-sm border-2 border-zinc-200 sticky top-24">
-              <div className="flex items-center gap-2 mb-6 text-zinc-900 pb-4 border-b border-zinc-100">
-                <Filter className="w-5 h-5" />
-                <h3 className="font-black text-lg uppercase tracking-tight">Filters &amp; Sort</h3>
+            <div className="bg-white p-6 rounded-3xl shadow-sm border-2 border-zinc-200 sticky top-24 space-y-6">
+              <div className="flex items-center justify-between text-zinc-900 pb-4 border-b border-zinc-100">
+                <div className="flex items-center gap-2">
+                  <Filter className="w-5 h-5" />
+                  <h3 className="font-black text-lg uppercase tracking-tight">Filters &amp; Sort</h3>
+                </div>
+                {hasActiveFilters && (
+                  <Link href="/products" className="text-[10px] font-black uppercase text-red-600 hover:underline">
+                    Reset
+                  </Link>
+                )}
               </div>
               
+              {/* Filter By Brand (Sidebar) */}
+              <div>
+                <h4 className="font-black text-zinc-900 mb-3 uppercase text-xs tracking-wider flex items-center justify-between">
+                  <span>Filter by Brand</span>
+                  {brand && brand.toLowerCase() !== 'all' && (
+                    <span className="text-[10px] bg-[#FEE715] text-black px-1.5 py-0.5 rounded font-black">
+                      {brand}
+                    </span>
+                  )}
+                </h4>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {POPULAR_BRANDS.map((b) => {
+                    const brandValue = b.toLowerCase();
+                    const isBrandActive = (b === 'All' && !brand) || (brand && brand.toLowerCase() === brandValue);
+                    
+                    const params = new URLSearchParams();
+                    if (b !== 'All') params.set('brand', b);
+                    if (category) params.set('category', category);
+                    if (searchQuery) params.set('search', searchQuery);
+                    if (sort) params.set('sort', sort);
+
+                    const href = params.toString() ? `/products?${params.toString()}` : '/products';
+
+                    return (
+                      <Link
+                        key={b}
+                        href={href}
+                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border ${
+                          isBrandActive
+                            ? 'bg-[#FEE715] text-black border-black shadow-sm font-black'
+                            : 'bg-zinc-50 text-zinc-700 border-zinc-200 hover:bg-zinc-100 hover:text-black'
+                        }`}
+                      >
+                        <span>{b}</span>
+                        {isBrandActive && <Check className="w-3 h-3 text-black stroke-[3]" />}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Category Filter */}
-              <div className="mb-8">
+              <div className="pt-4 border-t border-zinc-100">
                 <h4 className="font-black text-zinc-900 mb-3 uppercase text-xs tracking-wider">Categories</h4>
-                <ul className="space-y-2">
+                <ul className="space-y-1.5">
                   {['All', 'Men', 'Women', 'Kids', 'Sports'].map((cat) => {
                     const catValue = cat.toLowerCase();
                     const isActive = (cat === 'All' && !category) || category === catValue;
                     const catParams = new URLSearchParams();
                     if (cat !== 'All') catParams.set('category', catValue);
+                    if (brand && brand.toLowerCase() !== 'all') catParams.set('brand', brand);
                     if (searchQuery) catParams.set('search', searchQuery);
                     if (sort) catParams.set('sort', sort);
 
@@ -108,7 +217,7 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
                           href={href} 
                           className={`block px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
                             isActive 
-                              ? "bg-[#FEE715] text-black shadow-sm font-black" 
+                              ? "bg-[#101820] text-[#FEE715] shadow-sm font-black" 
                               : "text-zinc-600 hover:bg-zinc-100 hover:text-black"
                           }`}
                         >
@@ -121,11 +230,11 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
               </div>
 
               {/* Special Drops Filter */}
-              <div className="mb-8 pt-4 border-t border-zinc-100">
+              <div className="pt-4 border-t border-zinc-100">
                 <h4 className="font-black text-zinc-900 mb-3 uppercase text-xs tracking-wider flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-zinc-900" /> Curated Drops
                 </h4>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {[
                     { label: 'Chunky Sneakers', search: 'chunky' },
                     { label: 'Anime Kicks', search: 'anime' },
@@ -152,7 +261,7 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
               {/* Sort By Filter */}
               <div className="pt-4 border-t border-zinc-100">
                 <h4 className="font-black text-zinc-900 mb-3 uppercase text-xs tracking-wider">Sort By</h4>
-                <div className="space-y-2 flex flex-col">
+                <div className="space-y-1.5 flex flex-col">
                   {[
                     { label: 'Newest Arrivals', value: 'newest' },
                     { label: 'Price: Low to High', value: 'price_asc' },
@@ -199,7 +308,7 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
                 </div>
                 <h3 className="text-2xl font-black uppercase tracking-tight text-zinc-900 mb-2">No matching kicks found</h3>
                 <p className="text-zinc-500 font-medium text-sm mb-6 max-w-sm mx-auto">
-                  We couldn't find any footwear matching your filters. Try clearing your search or explore our fresh collections.
+                  We couldn't find any footwear matching your filters. Try clearing your filters or explore our fresh collections.
                 </p>
                 <Link
                   href="/products"

@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -1242,7 +1242,7 @@ async function seedDatabase() {
 
   console.log(`\n🎉 Successfully populated Neon Database with ${insertedCount} high-quality sneakers!`);
 
-  const brandsSummary = SHOES_DATA.reduce((acc, curr) => {
+  const brandsSummary: Record<string, number> = SHOES_DATA.reduce((acc: Record<string, number>, curr) => {
     acc[curr.brand] = (acc[curr.brand] || 0) + 1;
     return acc;
   }, {});

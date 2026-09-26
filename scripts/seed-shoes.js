@@ -1229,6 +1229,7 @@ async function seedDatabase() {
 
   console.log(`Inserting ${SHOES_DATA.length} realistic brand-accurate shoes into Neon DB...`);
 
+  // Batch insert
   let insertedCount = 0;
   for (const shoe of SHOES_DATA) {
     await prisma.product.create({
@@ -1242,6 +1243,7 @@ async function seedDatabase() {
 
   console.log(`\n🎉 Successfully populated Neon Database with ${insertedCount} high-quality sneakers!`);
 
+  // Summary by brand
   const brandsSummary = SHOES_DATA.reduce((acc, curr) => {
     acc[curr.brand] = (acc[curr.brand] || 0) + 1;
     return acc;
