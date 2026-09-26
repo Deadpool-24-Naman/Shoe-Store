@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ArrowRight, Flame, Sparkles, Zap, ShieldCheck, Truck, RefreshCcw, Tag } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import CountdownBanner from "@/components/CountdownBanner";
+import HeroSlider from "@/components/HeroSlider";
 
 const FEATURED_COLLECTIONS = [
   {
@@ -79,28 +80,27 @@ export default async function Home() {
         </span>
       </div>
 
-      {/* Hero Section */}
-      <section className="relative bg-[#101820] text-white pt-16 pb-24 lg:pt-24 lg:pb-32 overflow-hidden border-b-4 border-[#FEE715]">
-        {/* Background Graphic Accents */}
-        <div className="absolute top-10 right-10 w-96 h-96 bg-[#FEE715]/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-            
-            {/* Hero Left Content */}
-            <div className="lg:w-7/12 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-zinc-800/80 border border-[#FEE715]/40 rounded-full px-4 py-1.5 mb-6 text-xs font-black uppercase tracking-wider text-[#FEE715] shadow-inner">
+      {/* Hero Section with Background Image Slider */}
+      <section className="relative min-h-[85vh] lg:min-h-[90vh] text-white overflow-hidden border-b-4 border-[#FEE715] flex items-center">
+        {/* Full-width Background Image Slider */}
+        <HeroSlider />
+
+        <div className="container mx-auto px-4 relative z-10 py-20 lg:py-28">
+          <div className="max-w-3xl mx-auto lg:mx-0">
+
+            {/* Hero Content */}
+            <div className="text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 bg-black/50 backdrop-blur-sm border border-[#FEE715]/40 rounded-full px-4 py-1.5 mb-6 text-xs font-black uppercase tracking-wider text-[#FEE715] shadow-inner">
                 <Flame className="w-4 h-4 fill-[#FEE715]" />
                 <span>GEN-Z STREETWEAR DROP • 2026 EDITION</span>
               </div>
 
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black uppercase tracking-tight text-white leading-[1.05] mb-6">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black uppercase tracking-tight text-white leading-[1.05] mb-6 drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
                 UNAPOLOGETIC <br />
                 <span className="text-[#FEE715] bg-clip-text">STREET DRIP</span> &amp; KICKS.
               </h1>
 
-              <p className="text-zinc-300 text-lg sm:text-xl font-medium max-w-xl mb-10 leading-relaxed mx-auto lg:mx-0">
+              <p className="text-zinc-200 text-lg sm:text-xl font-medium max-w-xl mb-10 leading-relaxed mx-auto lg:mx-0 drop-shadow-md">
                 Bold chunky silhouettes, crazy anime-inspired drops, and everyday beaters crafted for the culture.
               </p>
 
@@ -116,14 +116,14 @@ export default async function Home() {
 
                 <Link
                   href="/products?search=chunky"
-                  className="bg-zinc-800/90 hover:bg-zinc-700 text-white font-black uppercase tracking-wider px-7 py-4 rounded-2xl text-sm border border-zinc-700 hover:border-[#FEE715] transition-all"
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-black uppercase tracking-wider px-7 py-4 rounded-2xl text-sm border border-white/30 hover:border-[#FEE715] transition-all"
                 >
                   CHUNKY KICKS 👟
                 </Link>
               </div>
 
               {/* Street Trust Badges */}
-              <div className="mt-12 pt-8 border-t border-zinc-800/80 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs font-bold text-zinc-400">
+              <div className="mt-12 pt-8 border-t border-white/10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs font-bold text-zinc-300">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#FEE715]" />
                   <span>100% Street Certified</span>
@@ -136,28 +136,6 @@ export default async function Home() {
                   <div className="w-2.5 h-2.5 rounded-full bg-purple-400" />
                   <span>Exclusive Limited Drops</span>
                 </div>
-              </div>
-            </div>
-
-            {/* Hero Right Visual */}
-            <div className="lg:w-5/12 flex justify-center relative w-full">
-              <div className="relative w-full max-w-md aspect-square bg-gradient-to-tr from-zinc-800 to-zinc-900 rounded-[2.5rem] p-6 border-2 border-zinc-700 shadow-2xl flex items-center justify-center group overflow-hidden">
-                {/* Visual Glow */}
-                <div className="absolute inset-0 bg-radial from-[#FEE715]/20 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
-                
-                {/* Floating Sticker Badges */}
-                <span className="absolute top-5 left-5 bg-[#FEE715] text-black font-black text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-md rotate-[-6deg] z-10">
-                  🔥 TOP RATED
-                </span>
-                <span className="absolute bottom-6 right-6 bg-black text-white border border-[#FEE715] font-black text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-md rotate-[4deg] z-10">
-                  ⚡ 2026 EDITION
-                </span>
-
-                <img
-                  src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=1000&auto=format&fit=crop"
-                  alt="Streetwear Sneaker Drop"
-                  className="w-full h-full object-contain mix-blend-lighten transform group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-700 ease-out"
-                />
               </div>
             </div>
 
