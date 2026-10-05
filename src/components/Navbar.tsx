@@ -1,20 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, User, Search, Package, Heart, Flame, Command } from 'lucide-react';
+import { ShoppingCart, User, Search, Package, Heart, Flame, Command, Menu, X, Sparkles } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import SearchModal from '@/components/SearchModal';
+
+const NAV_LINKS = [
+  { name: 'ALL KICKS', href: '/products' },
+  { name: 'CHUNKY', href: '/products?search=chunky', isChunky: true },
+  { name: 'ANIME', href: '/products?search=anime' },
+  { name: 'MEN', href: '/products?category=men' },
+  { name: 'WOMEN', href: '/products?category=women' },
+  { name: 'SPORTS', href: '/products?category=sports' },
+];
 
 export default function Navbar() {
   const { data: session } = useSession();
   const items = useCartStore((state) => state.items);
   const [mounted, setMounted] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
-  const router = useRouter();
 
   useEffect(() => setMounted(true), []);
 
@@ -34,101 +42,103 @@ export default function Navbar() {
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-2 border-zinc-200 shadow-sm transition-all duration-300">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-2 border-zinc-200 shadow-sm transition-all duration-300">
+      <div className="w-full px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between relative">
 
-        {/* Brand Logo - Bewakoof/Gen-Z Streetwear Style */}
-        <Link href="/" className="flex items-center gap-1.5 group shrink-0">
-          <div className="bg-[#101820] text-[#FEE715] font-black text-2xl tracking-tighter px-3 py-1 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform">
-            KICKS<span className="text-[#FEE715]">.</span>
-          </div>
-          <span className="hidden sm:inline-block bg-[#FEE715] text-black text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border border-black">
-            STREET
-          </span>
-        </Link>
+        {/* LEFT SECTION: Category Navigation Links & Mobile Toggle */}
+        <div className="flex items-center gap-4 lg:gap-6 flex-1 justify-start">
+          {/* Mobile Hamburger Toggle */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden p-2 text-zinc-800 hover:bg-zinc-100 rounded-xl transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
 
-        {/* Category Links */}
-        <div className="hidden lg:flex items-center gap-6 font-black text-xs tracking-wider uppercase text-zinc-700 shrink-0">
-          <Link href="/products" className="hover:text-black hover:underline decoration-[#FEE715] decoration-2 transition-colors">
-            All Kicks
-          </Link>
-          <Link href="/products?search=chunky" className="hover:text-black hover:underline decoration-[#FEE715] decoration-2 transition-colors flex items-center gap-1">
-            <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-400" /> Chunky
-          </Link>
-          <Link href="/products?search=anime" className="hover:text-black hover:underline decoration-[#FEE715] decoration-2 transition-colors">
-            Anime
-          </Link>
-          <Link href="/products?category=men" className="hover:text-black hover:underline decoration-[#FEE715] decoration-2 transition-colors">
-            Men
-          </Link>
-          <Link href="/products?category=women" className="hover:text-black hover:underline decoration-[#FEE715] decoration-2 transition-colors">
-            Women
-          </Link>
-          <Link href="/products?category=sports" className="hover:text-black hover:underline decoration-[#FEE715] decoration-2 transition-colors">
-            Sports
+          {/* Desktop Categories */}
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-6 font-black text-[11px] xl:text-xs tracking-wider uppercase text-zinc-800">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className="hover:text-black hover:underline decoration-[#FEE715] decoration-4 underline-offset-4 transition-all flex items-center gap-1 shrink-0"
+              >
+                {link.isChunky && <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />}
+                <span>{link.name}</span>
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        {/* EXACT CENTER SECTION: Prominent 'KICKS.' Brand Logo */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-auto">
+          <Link href="/" className="flex items-center gap-2 group shrink-0">
+            <div className="flex items-center">
+              <span className="font-black text-3xl sm:text-4xl tracking-tighter uppercase text-zinc-950 group-hover:scale-105 transition-transform duration-200">
+                KICKS<span className="text-[#FEE715] text-4xl sm:text-5xl leading-none">.</span>
+              </span>
+            </div>
+            <span className="hidden md:inline-block bg-[#FEE715] text-black text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+              STREET
+            </span>
           </Link>
         </div>
 
-        {/* Command Palette Live Search Trigger Bar */}
-        <div className="flex-1 max-w-xs md:max-w-sm relative">
+        {/* RIGHT SECTION: Search, Wishlist, Cart, Orders & Profile */}
+        <div className="flex items-center gap-2 sm:gap-3 flex-1 justify-end">
+          
+          {/* Live Search Trigger Bar */}
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="w-full bg-zinc-100 hover:bg-zinc-200/80 text-zinc-900 pl-10 pr-3 py-2.5 rounded-full text-xs font-bold border border-zinc-200 flex items-center justify-between transition-all group shadow-2xs cursor-pointer text-left"
+            className="bg-zinc-100 hover:bg-zinc-200/80 text-zinc-900 pl-3.5 pr-2.5 sm:pr-3 py-2 sm:py-2.5 rounded-full text-xs font-bold border border-zinc-200/90 flex items-center gap-2 transition-all group shadow-2xs cursor-pointer max-w-[140px] sm:max-w-[200px] md:max-w-[220px]"
           >
-            <div className="flex items-center gap-2 min-w-0">
-              <Search className="w-4 h-4 text-zinc-400 group-hover:text-black shrink-0" />
-              <span className="text-zinc-400 group-hover:text-zinc-700 truncate">
-                Search kicks, brands...
-              </span>
-            </div>
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 bg-white border border-zinc-300 text-zinc-500 group-hover:text-zinc-900 text-[10px] font-mono px-1.5 py-0.5 rounded shadow-2xs shrink-0">
+            <Search className="w-4 h-4 text-zinc-400 group-hover:text-black shrink-0" />
+            <span className="hidden sm:inline text-zinc-400 group-hover:text-zinc-700 truncate text-xs">
+              Search kicks...
+            </span>
+            <kbd className="hidden md:inline-flex items-center gap-0.5 bg-white border border-zinc-300 text-zinc-500 group-hover:text-zinc-900 text-[10px] font-mono px-1.5 py-0.5 rounded shadow-2xs ml-auto shrink-0">
               <Command className="w-3 h-3" />K
             </kbd>
           </button>
-        </div>
 
-        {/* Global Command Palette / Live Search Modal */}
-        <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-
-        {/* Action Icons */}
-        <div className="flex items-center gap-2.5 shrink-0">
-
-          {/* ❤️ Wishlist Icon */}
+          {/* Wishlist Icon */}
           <Link
             href="/wishlist"
-            className="relative p-2.5 rounded-2xl text-zinc-800 hover:text-red-600 hover:bg-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200"
+            className="relative p-2 sm:p-2.5 rounded-2xl text-zinc-800 hover:text-red-600 hover:bg-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200"
             aria-label="Wishlist"
           >
             <Heart
               className={`w-5 h-5 transition-colors ${mounted && wishlistCount > 0 ? 'fill-red-500 text-red-500' : ''}`}
             />
             {mounted && wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#101820] text-[#FEE715] border border-[#FEE715] text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-md">
+              <span className="absolute -top-1 -right-1 bg-[#101820] text-[#FEE715] border border-[#FEE715] text-[10px] font-black rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center shadow-md">
                 {wishlistCount}
               </span>
             )}
           </Link>
 
-          {/* 🛒 Cart Icon */}
+          {/* Cart Icon */}
           <Link
             href="/cart"
-            className="relative p-2.5 rounded-2xl text-zinc-800 hover:text-black hover:bg-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200"
+            className="relative p-2 sm:p-2.5 rounded-2xl text-zinc-800 hover:text-black hover:bg-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200"
             aria-label="Shopping Cart"
           >
             <ShoppingCart className="w-5 h-5" />
             {mounted && totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#FEE715] text-black font-black text-[10px] rounded-full w-5 h-5 flex items-center justify-center shadow-md border border-black animate-pulse">
+              <span className="absolute -top-1 -right-1 bg-[#FEE715] text-black font-black text-[10px] rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center shadow-md border border-black animate-pulse">
                 {totalItems}
               </span>
             )}
           </Link>
 
-          {/* 📦 Orders Link */}
+          {/* Orders Link (Desktop) */}
           {mounted && session?.user && (
             <Link
               href="/orders"
-              className="hidden sm:flex items-center gap-1.5 p-2 px-3.5 rounded-2xl text-xs font-black text-zinc-900 bg-zinc-100 hover:bg-[#FEE715] hover:text-black transition-all duration-200 border border-zinc-200"
+              className="hidden xl:flex items-center gap-1.5 p-2 px-3 rounded-2xl text-xs font-black text-zinc-900 bg-zinc-100 hover:bg-[#FEE715] hover:text-black transition-all duration-200 border border-zinc-200"
               aria-label="My Orders"
             >
               <Package className="w-4 h-4" />
@@ -136,22 +146,64 @@ export default function Navbar() {
             </Link>
           )}
 
-          {/* 👤 User Account / Profile */}
+          {/* User Account / Profile */}
           <Link
             href={session?.user ? '/profile' : '/login'}
-            className="flex items-center gap-2 p-2 rounded-2xl text-zinc-800 hover:text-black hover:bg-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200"
+            className="flex items-center gap-1.5 p-2 rounded-2xl text-zinc-800 hover:text-black hover:bg-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200"
             aria-label="User Account"
           >
             <User className="w-5 h-5" />
             {mounted && session?.user && (
-              <span className="hidden xl:inline-block text-xs font-black text-zinc-900 max-w-[90px] truncate">
+              <span className="hidden 2xl:inline-block text-xs font-black text-zinc-900 max-w-[80px] truncate">
                 {session.user.name || session.user.email?.split('@')[0]}
               </span>
             )}
           </Link>
 
         </div>
+
       </div>
-    </nav>
+
+      {/* Mobile Drawer Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden border-t-2 border-zinc-100 bg-white px-6 py-5 space-y-4 animate-in slide-in-from-top-2 duration-200">
+          <div className="grid grid-cols-2 gap-3">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-3 rounded-xl bg-zinc-50 hover:bg-[#FEE715] text-zinc-900 font-black text-xs uppercase tracking-wider border border-zinc-200 transition-colors"
+              >
+                {link.isChunky && <Flame className="w-4 h-4 text-amber-500 fill-amber-400" />}
+                <span>{link.name}</span>
+              </Link>
+            ))}
+          </div>
+
+          {mounted && session?.user && (
+            <div className="pt-3 border-t border-zinc-100 flex items-center justify-between">
+              <Link
+                href="/orders"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 text-xs font-black uppercase text-zinc-800 hover:text-black"
+              >
+                <Package className="w-4 h-4" /> My Orders
+              </Link>
+              <Link
+                href="/profile"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 text-xs font-black uppercase text-zinc-800 hover:text-black"
+              >
+                <User className="w-4 h-4" /> Profile
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Global Command Palette / Live Search Modal */}
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+    </header>
   );
 }
