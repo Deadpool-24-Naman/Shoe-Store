@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" rx="24" fill="#F4F4F5"/>
+  <rect x="1" y="1" width="398" height="398" rx="23" stroke="#E4E4E7" stroke-width="2"/>
+  <!-- Shoe silhouette -->
+  <g transform="translate(80, 140)">
+    <path d="M20 120 C20 120 30 80 60 60 C90 40 120 50 140 45 C160 40 180 30 200 35 C220 40 230 55 225 70 L220 85 L230 90 L240 120 Z" fill="#D4D4D8" stroke="#A1A1AA" stroke-width="2"/>
+    <path d="M20 120 L240 120 L240 135 C240 145 232 150 220 150 L40 150 C28 150 20 145 20 135 Z" fill="#A1A1AA" stroke="#71717A" stroke-width="2"/>
+    <ellipse cx="130" cy="120" rx="110" ry="8" fill="#E4E4E7"/>
+    <!-- Lace holes -->
+    <circle cx="120" cy="55" r="4" fill="#F4F4F5" stroke="#A1A1AA" stroke-width="1.5"/>
+    <circle cx="140" cy="48" r="4" fill="#F4F4F5" stroke="#A1A1AA" stroke-width="1.5"/>
+    <circle cx="160" cy="45" r="4" fill="#F4F4F5" stroke="#A1A1AA" stroke-width="1.5"/>
+    <!-- Swoosh -->
+    <path d="M60 95 Q120 70 210 80" stroke="#FEE715" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- Text -->
+  <text x="200" y="330" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="800" fill="#A1A1AA" letter-spacing="3">IMAGE UNAVAILABLE</text>
+  <text x="200" y="355" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#D4D4D8" letter-spacing="1">STREETWEAR KICKS</text>
+</svg>

@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Star, Zap, Flame, Sparkles, Crown } from 'lucide-react';
 import WishlistButton from './WishlistButton';
+
+const PLACEHOLDER_IMG = '/placeholder-shoe.svg';
 
 interface ProductCardProps {
   product: {
@@ -29,7 +32,8 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   } catch {
     images = product?.images ? [product.images] : ['/placeholder.png'];
   }
-  const firstImage = images?.[0] || '/placeholder.png';
+  const firstImage = images?.[0] || PLACEHOLDER_IMG;
+  const [imgSrc, setImgSrc] = useState(firstImage);
   const isOutOfStock = (product?.stock ?? 0) <= 0;
   const isLowStock = !isOutOfStock && (product?.stock ?? 0) <= 3;
   const price = typeof product?.price === 'number' ? product.price : 0;
@@ -88,9 +92,10 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         {/* Shoe Image */}
         <Link href={`/products/${product.id}`} className="w-full h-full flex items-center justify-center">
           <img
-            src={firstImage}
+            src={imgSrc}
             alt={product?.name || 'Streetwear Footwear'}
             className="object-contain w-full h-full group-hover:scale-110 group-hover:-rotate-2 transition-transform duration-500 mix-blend-multiply"
+            onError={() => setImgSrc(PLACEHOLDER_IMG)}
           />
         </Link>
       </div>

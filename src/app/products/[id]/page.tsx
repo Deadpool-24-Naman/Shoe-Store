@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import AddToCart from '@/components/AddToCart';
 import ReviewSection from '@/components/ReviewSection';
 import StyleMatcherSection from '@/components/StyleMatcherSection';
+import ProductImage from '@/components/ProductImage';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
@@ -31,7 +32,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
   } catch {
     images = product.images ? [product.images] : ['/placeholder.png'];
   }
-  const firstImage = images?.[0] || '/placeholder.png';
+  const firstImage = images?.[0] || '/placeholder-shoe.svg';
   const isOutOfStock = (product.stock ?? 0) <= 0;
 
   return (
@@ -52,11 +53,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             {/* Product Image Gallery Box */}
             <div className="w-full lg:w-1/2">
               <div className="aspect-square bg-[#F4F4F5] rounded-3xl overflow-hidden p-8 relative flex items-center justify-center group border-2 border-zinc-200/80">
-                <img
-                  src={firstImage}
-                  alt={product.name || 'Shoe'}
-                  className="w-full h-full object-contain mix-blend-multiply transform group-hover:scale-110 group-hover:-rotate-2 transition-transform duration-700 ease-out"
-                />
+                <ProductImage src={firstImage} alt={product.name || 'Shoe'} />
                 {/* Out of Stock Overlay Badge */}
                 {isOutOfStock && (
                   <div className="absolute top-4 left-4 bg-red-600 text-white text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-xl shadow">
