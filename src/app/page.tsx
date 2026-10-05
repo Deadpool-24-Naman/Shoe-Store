@@ -81,33 +81,33 @@ export default async function Home() {
       </div>
 
       {/* Hero Section with Background Image Slider */}
-      <section className="relative min-h-[85vh] lg:min-h-[90vh] text-white overflow-hidden border-b-4 border-[#FEE715] flex items-center">
+      <section className="relative min-h-[75vh] sm:min-h-[85vh] lg:min-h-[90vh] text-white overflow-hidden border-b-4 border-[#FEE715] flex items-center">
         {/* Full-width Background Image Slider */}
         <HeroSlider />
 
-        <div className="container mx-auto px-4 relative z-10 py-20 lg:py-28">
+        <div className="container mx-auto px-4 relative z-10 py-12 sm:py-16 md:py-20 lg:py-28">
           <div className="max-w-3xl mx-auto lg:mx-0">
 
             {/* Hero Content */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-black/50 backdrop-blur-sm border border-[#FEE715]/40 rounded-full px-4 py-1.5 mb-6 text-xs font-black uppercase tracking-wider text-[#FEE715] shadow-inner">
-                <Flame className="w-4 h-4 fill-[#FEE715]" />
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-black/60 backdrop-blur-sm border border-[#FEE715]/40 rounded-full px-3 py-1 sm:px-4 sm:py-1.5 mb-4 sm:mb-6 text-[10px] sm:text-xs font-black uppercase tracking-wider text-[#FEE715] shadow-inner">
+                <Flame className="w-3.5 h-3.5 fill-[#FEE715] shrink-0" />
                 <span>GEN-Z STREETWEAR DROP • 2026 EDITION</span>
               </div>
 
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black uppercase tracking-tight text-white leading-[1.05] mb-6 drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black uppercase tracking-tight text-white leading-[1.1] sm:leading-[1.05] mb-4 sm:mb-6 drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
                 UNAPOLOGETIC <br />
                 <span className="text-[#FEE715] bg-clip-text">STREET DRIP</span> &amp; KICKS.
               </h1>
 
-              <p className="text-zinc-200 text-lg sm:text-xl font-medium max-w-xl mb-10 leading-relaxed mx-auto lg:mx-0 drop-shadow-md">
+              <p className="text-zinc-200 text-sm sm:text-lg md:text-xl font-medium max-w-xl mb-6 sm:mb-10 leading-relaxed mx-auto lg:mx-0 drop-shadow-md">
                 Bold chunky silhouettes, crazy anime-inspired drops, and everyday beaters crafted for the culture.
               </p>
 
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 max-w-md mx-auto lg:mx-0">
                 <Link
                   href="/products"
-                  className="bg-[#FEE715] hover:bg-yellow-400 text-black font-black uppercase tracking-wider px-8 py-4 rounded-2xl text-sm flex items-center gap-2.5 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.9)] hover:translate-x-0.5 hover:translate-y-0.5"
+                  className="w-full sm:w-auto bg-[#FEE715] hover:bg-yellow-400 text-black font-black uppercase tracking-wider px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl sm:rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.9)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.9)] hover:translate-x-0.5 hover:translate-y-0.5"
                 >
                   <Flame className="w-4 h-4 fill-black" />
                   SHOP ALL DROPS
@@ -116,24 +116,24 @@ export default async function Home() {
 
                 <Link
                   href="/products?search=chunky"
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-black uppercase tracking-wider px-7 py-4 rounded-2xl text-sm border border-white/30 hover:border-[#FEE715] transition-all"
+                  className="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-black uppercase tracking-wider px-6 py-3.5 sm:px-7 sm:py-4 rounded-xl sm:rounded-2xl text-xs sm:text-sm border border-white/30 hover:border-[#FEE715] transition-all text-center"
                 >
                   CHUNKY KICKS 👟
                 </Link>
               </div>
 
-              {/* Street Trust Badges */}
-              <div className="mt-12 pt-8 border-t border-white/10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs font-bold text-zinc-300">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#FEE715]" />
+              {/* Street Trust Badges with mobile bottom clearance */}
+              <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-white/10 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-[11px] sm:text-xs font-bold text-zinc-300 pb-10 sm:pb-0">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#FEE715]" />
                   <span>100% Street Certified</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400" />
                   <span>50K+ Pairs Delivered</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-purple-400" />
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-purple-400" />
                   <span>Exclusive Limited Drops</span>
                 </div>
               </div>

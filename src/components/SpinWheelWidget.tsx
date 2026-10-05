@@ -83,11 +83,11 @@ export default function SpinWheelWidget() {
   return (
     <>
       {/* Floating Bottom-Left Action Button */}
-      <div className="fixed bottom-6 left-6 z-40">
+      <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-40">
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="group flex items-center gap-2 bg-[#101820] text-[#FEE715] hover:bg-black p-3.5 sm:px-5 sm:py-3.5 rounded-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(254,231,21,1)] hover:shadow-[2px_2px_0px_0px_rgba(254,231,21,1)] transition-all hover:scale-105"
+          className="group flex items-center gap-2 bg-[#101820] text-[#FEE715] hover:bg-black p-2.5 sm:px-5 sm:py-3.5 rounded-full border-2 border-black shadow-[3px_3px_0px_0px_rgba(254,231,21,1)] sm:shadow-[4px_4px_0px_0px_rgba(254,231,21,1)] transition-all hover:scale-105 cursor-pointer"
           aria-label="Spin the Wheel Discount"
         >
           <div className="relative">

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, User, Search, Package, Heart, Flame, Command, Menu, X, Sparkles } from 'lucide-react';
+import { ShoppingCart, User, Search, Package, Heart, Flame, Command, Menu, X } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
@@ -43,18 +43,18 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-2 border-zinc-200 shadow-sm transition-all duration-300">
-      <div className="w-full px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between relative">
+      <div className="w-full px-3 sm:px-6 md:px-8 py-2.5 sm:py-3.5 flex items-center justify-between relative">
 
         {/* LEFT SECTION: Category Navigation Links & Mobile Toggle */}
-        <div className="flex items-center gap-4 lg:gap-6 flex-1 justify-start">
+        <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 flex-1 justify-start">
           {/* Mobile Hamburger Toggle */}
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 text-zinc-800 hover:bg-zinc-100 rounded-xl transition-colors"
+            className="lg:hidden p-1.5 sm:p-2 text-zinc-800 hover:bg-zinc-100 rounded-xl transition-colors cursor-pointer"
             aria-label="Toggle menu"
           >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
           </button>
 
           {/* Desktop Categories */}
@@ -74,10 +74,10 @@ export default function Navbar() {
 
         {/* EXACT CENTER SECTION: Prominent 'KICKS.' Brand Logo */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-auto">
-          <Link href="/" className="flex items-center gap-2 group shrink-0">
+          <Link href="/" className="flex items-center gap-1.5 group shrink-0">
             <div className="flex items-center">
-              <span className="font-black text-3xl sm:text-4xl tracking-tighter uppercase text-zinc-950 group-hover:scale-105 transition-transform duration-200">
-                KICKS<span className="text-[#FEE715] text-4xl sm:text-5xl leading-none">.</span>
+              <span className="font-black text-2xl sm:text-3xl md:text-4xl tracking-tighter uppercase text-zinc-950 group-hover:scale-105 transition-transform duration-200">
+                KICKS<span className="text-[#FEE715] text-3xl sm:text-4xl md:text-5xl leading-none">.</span>
               </span>
             </div>
             <span className="hidden md:inline-block bg-[#FEE715] text-black text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
@@ -87,16 +87,26 @@ export default function Navbar() {
         </div>
 
         {/* RIGHT SECTION: Search, Wishlist, Cart, Orders & Profile */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-1 justify-end">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3 flex-1 justify-end">
           
-          {/* Live Search Trigger Bar */}
+          {/* Mobile Search Icon Trigger (< 640px) */}
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="bg-zinc-100 hover:bg-zinc-200/80 text-zinc-900 pl-3.5 pr-2.5 sm:pr-3 py-2 sm:py-2.5 rounded-full text-xs font-bold border border-zinc-200/90 flex items-center gap-2 transition-all group shadow-2xs cursor-pointer max-w-[140px] sm:max-w-[200px] md:max-w-[220px]"
+            className="sm:hidden p-2 text-zinc-800 hover:bg-zinc-100 rounded-xl transition-colors cursor-pointer"
+            aria-label="Open Search"
+          >
+            <Search className="w-5 h-5 text-zinc-700" />
+          </button>
+
+          {/* Desktop Live Search Trigger Pill (>= 640px) */}
+          <button
+            type="button"
+            onClick={() => setIsSearchOpen(true)}
+            className="hidden sm:flex bg-zinc-100 hover:bg-zinc-200/80 text-zinc-900 pl-3.5 pr-2.5 sm:pr-3 py-2 sm:py-2.5 rounded-full text-xs font-bold border border-zinc-200/90 items-center gap-2 transition-all group shadow-2xs cursor-pointer max-w-[170px] md:max-w-[210px]"
           >
             <Search className="w-4 h-4 text-zinc-400 group-hover:text-black shrink-0" />
-            <span className="hidden sm:inline text-zinc-400 group-hover:text-zinc-700 truncate text-xs">
+            <span className="text-zinc-400 group-hover:text-zinc-700 truncate text-xs">
               Search kicks...
             </span>
             <kbd className="hidden md:inline-flex items-center gap-0.5 bg-white border border-zinc-300 text-zinc-500 group-hover:text-zinc-900 text-[10px] font-mono px-1.5 py-0.5 rounded shadow-2xs ml-auto shrink-0">
@@ -107,14 +117,14 @@ export default function Navbar() {
           {/* Wishlist Icon */}
           <Link
             href="/wishlist"
-            className="relative p-2 sm:p-2.5 rounded-2xl text-zinc-800 hover:text-red-600 hover:bg-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200"
+            className="relative p-2 rounded-xl text-zinc-800 hover:text-red-600 hover:bg-zinc-100 transition-all duration-200"
             aria-label="Wishlist"
           >
             <Heart
               className={`w-5 h-5 transition-colors ${mounted && wishlistCount > 0 ? 'fill-red-500 text-red-500' : ''}`}
             />
             {mounted && wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#101820] text-[#FEE715] border border-[#FEE715] text-[10px] font-black rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center shadow-md">
+              <span className="absolute -top-0.5 -right-0.5 bg-[#101820] text-[#FEE715] border border-[#FEE715] text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center shadow-md">
                 {wishlistCount}
               </span>
             )}
@@ -123,12 +133,12 @@ export default function Navbar() {
           {/* Cart Icon */}
           <Link
             href="/cart"
-            className="relative p-2 sm:p-2.5 rounded-2xl text-zinc-800 hover:text-black hover:bg-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200"
+            className="relative p-2 rounded-xl text-zinc-800 hover:text-black hover:bg-zinc-100 transition-all duration-200"
             aria-label="Shopping Cart"
           >
             <ShoppingCart className="w-5 h-5" />
             {mounted && totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#FEE715] text-black font-black text-[10px] rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center shadow-md border border-black animate-pulse">
+              <span className="absolute -top-0.5 -right-0.5 bg-[#FEE715] text-black font-black text-[9px] rounded-full w-4 h-4 flex items-center justify-center shadow-md border border-black animate-pulse">
                 {totalItems}
               </span>
             )}
@@ -149,15 +159,10 @@ export default function Navbar() {
           {/* User Account / Profile */}
           <Link
             href={session?.user ? '/profile' : '/login'}
-            className="flex items-center gap-1.5 p-2 rounded-2xl text-zinc-800 hover:text-black hover:bg-zinc-100 transition-all duration-200 border border-transparent hover:border-zinc-200"
+            className="hidden xs:flex p-2 rounded-xl text-zinc-800 hover:text-black hover:bg-zinc-100 transition-all duration-200"
             aria-label="User Account"
           >
             <User className="w-5 h-5" />
-            {mounted && session?.user && (
-              <span className="hidden 2xl:inline-block text-xs font-black text-zinc-900 max-w-[80px] truncate">
-                {session.user.name || session.user.email?.split('@')[0]}
-              </span>
-            )}
           </Link>
 
         </div>
@@ -166,39 +171,47 @@ export default function Navbar() {
 
       {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t-2 border-zinc-100 bg-white px-6 py-5 space-y-4 animate-in slide-in-from-top-2 duration-200">
-          <div className="grid grid-cols-2 gap-3">
+        <div className="lg:hidden border-t-2 border-zinc-100 bg-white px-4 py-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
+          <div className="grid grid-cols-2 gap-2">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 p-3 rounded-xl bg-zinc-50 hover:bg-[#FEE715] text-zinc-900 font-black text-xs uppercase tracking-wider border border-zinc-200 transition-colors"
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-50 hover:bg-[#FEE715] text-zinc-900 font-black text-xs uppercase tracking-wider border border-zinc-200 transition-colors"
               >
-                {link.isChunky && <Flame className="w-4 h-4 text-amber-500 fill-amber-400" />}
+                {link.isChunky && <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />}
                 <span>{link.name}</span>
               </Link>
             ))}
           </div>
 
-          {mounted && session?.user && (
-            <div className="pt-3 border-t border-zinc-100 flex items-center justify-between">
+          <div className="pt-2 border-t border-zinc-100 flex items-center justify-between text-xs font-black uppercase text-zinc-800">
+            <Link
+              href="/track-order"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="hover:text-black py-1"
+            >
+              Track Order
+            </Link>
+            {mounted && session?.user ? (
               <Link
                 href="/orders"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 text-xs font-black uppercase text-zinc-800 hover:text-black"
+                className="hover:text-black py-1"
               >
-                <Package className="w-4 h-4" /> My Orders
+                My Orders
               </Link>
+            ) : (
               <Link
-                href="/profile"
+                href="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 text-xs font-black uppercase text-zinc-800 hover:text-black"
+                className="hover:text-black py-1"
               >
-                <User className="w-4 h-4" /> Profile
+                Login / Register
               </Link>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
 
