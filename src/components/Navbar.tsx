@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, User, Search, Package, Heart, Flame, Command, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, Search, Package, Heart, Flame, Command, Menu, X, LogOut, Truck, ChevronRight } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import SearchModal from '@/components/SearchModal';
 
 const NAV_LINKS = [
@@ -40,6 +40,16 @@ export default function Navbar() {
   }, [mounted, session?.user?.email]);
 
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
+
+  const getInitials = (name?: string | null, email?: string | null) => {
+    if (name) {
+      const parts = name.trim().split(' ');
+      if (parts.length > 1) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return name.substring(0, 2).toUpperCase();
+    }
+    if (email) return email.substring(0, 2).toUpperCase();
+    return 'U';
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-2 border-zinc-200 shadow-sm transition-all duration-300">
@@ -169,49 +179,139 @@ export default function Navbar() {
 
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer Menu (Slide-over with Profile & Account Navigation) */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t-2 border-zinc-100 bg-white px-4 py-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
-          <div className="grid grid-cols-2 gap-2">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-50 hover:bg-[#FEE715] text-zinc-900 font-black text-xs uppercase tracking-wider border border-zinc-200 transition-colors"
-              >
-                {link.isChunky && <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />}
-                <span>{link.name}</span>
-              </Link>
-            ))}
-          </div>
+        <div className="lg:hidden border-t-2 border-zinc-100 bg-white px-4 py-4 space-y-4 animate-in slide-in-from-top-2 duration-200 shadow-xl">
+          
+          {/* PROFILE HEADER BLOCK */}
+          {mounted && session?.user ? (
+            <div className="bg-zinc-900 text-white rounded-2xl p-3.5 flex items-center justify-between border border-zinc-800 shadow-sm">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-11 h-11 rounded-xl bg-[#FEE715] text-black font-black text-sm flex items-center justify-center shrink-0 shadow-inner">
+                  {getInitials(session.user.name, session.user.email)}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="font-extrabold text-sm text-white truncate">
+                      {session.user.name || 'Sneakerhead'}
+                    </h4>
+                    <span className="bg-[#FEE715] text-black text-[8px] font-black uppercase px-1 py-0.2 rounded shrink-0">
+                      VIP
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-zinc-400 truncate">
+                    {session.user.email}
+                  </p>
+                </div>
+              </div>
 
-          <div className="pt-2 border-t border-zinc-100 flex items-center justify-between text-xs font-black uppercase text-zinc-800">
-            <Link
-              href="/track-order"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="hover:text-black py-1"
-            >
-              Track Order
-            </Link>
-            {mounted && session?.user ? (
               <Link
-                href="/orders"
+                href="/profile"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:text-black py-1"
+                className="text-xs font-black text-[#FEE715] hover:underline shrink-0 ml-2"
               >
-                My Orders
+                Edit
               </Link>
-            ) : (
+            </div>
+          ) : (
+            <div className="bg-zinc-100 rounded-2xl p-3.5 flex items-center justify-between border border-zinc-200">
+              <div>
+                <h4 className="font-extrabold text-xs text-zinc-900 uppercase">Welcome to KICKS</h4>
+                <p className="text-[11px] text-zinc-500 font-medium">Join 50K+ streetwear heads</p>
+              </div>
               <Link
                 href="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:text-black py-1"
+                className="bg-black hover:bg-[#FEE715] hover:text-black text-white text-xs font-black uppercase tracking-wider py-2 px-3.5 rounded-xl transition-colors shrink-0 shadow-sm"
               >
-                Login / Register
+                Sign In
               </Link>
-            )}
+            </div>
+          )}
+
+          {/* ACCOUNT QUICK NAVIGATION LINKS */}
+          <div className="space-y-1">
+            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400 px-1 mb-1">
+              Account &amp; Orders
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/profile"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-50 hover:bg-[#FEE715] text-zinc-900 font-bold text-xs transition-colors border border-zinc-200/80"
+              >
+                <User className="w-4 h-4 text-zinc-700 shrink-0" />
+                <span className="truncate">My Profile</span>
+              </Link>
+
+              <Link
+                href="/orders"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-50 hover:bg-[#FEE715] text-zinc-900 font-bold text-xs transition-colors border border-zinc-200/80"
+              >
+                <Package className="w-4 h-4 text-zinc-700 shrink-0" />
+                <span className="truncate">My Orders</span>
+              </Link>
+
+              <Link
+                href="/wishlist"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-50 hover:bg-[#FEE715] text-zinc-900 font-bold text-xs transition-colors border border-zinc-200/80"
+              >
+                <Heart className="w-4 h-4 text-red-500 shrink-0" />
+                <span className="truncate">Wishlist ({wishlistCount})</span>
+              </Link>
+
+              <Link
+                href="/track-order"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-50 hover:bg-[#FEE715] text-zinc-900 font-bold text-xs transition-colors border border-zinc-200/80"
+              >
+                <Truck className="w-4 h-4 text-zinc-700 shrink-0" />
+                <span className="truncate">Track Order</span>
+              </Link>
+            </div>
           </div>
+
+          {/* STREET CATEGORIES NAVIGATION */}
+          <div className="space-y-1 pt-1 border-t border-zinc-100">
+            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400 px-1 mb-1">
+              Shop Collections
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-1.5 p-2.5 rounded-xl bg-zinc-50 hover:bg-[#FEE715] text-zinc-900 font-black text-xs uppercase tracking-wider border border-zinc-200/80 transition-colors"
+                >
+                  {link.isChunky && <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-400 shrink-0" />}
+                  <span className="truncate">{link.name}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* LOGOUT BUTTON (If Authenticated) */}
+          {mounted && session?.user && (
+            <div className="pt-2 border-t border-zinc-100">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  signOut({ callbackUrl: '/' });
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors cursor-pointer"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout of Account</span>
+              </button>
+            </div>
+          )}
+
         </div>
       )}
 
