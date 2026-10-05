@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Flame, Zap, Clock, ArrowRight } from 'lucide-react';
+import { Flame, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CountdownBanner() {
@@ -41,8 +41,8 @@ export default function CountdownBanner() {
 
   if (!mounted) {
     return (
-      <div className="bg-[#101820] text-[#FEE715] py-2 px-3 font-black text-[11px] sm:text-xs uppercase tracking-widest border-b-2 border-[#FEE715]/40 flex items-center justify-center">
-        <span>⚡ LIMITED DROP FLASH SALE LIVE • 40% OFF</span>
+      <div className="bg-[#101820] text-[#FEE715] py-2 px-3 font-black text-[11px] sm:text-xs uppercase tracking-widest border-b border-[#FEE715]/40 flex items-center justify-center">
+        <span>🔥 FLAT 40% OFF | FREE SHIPPING OVER $99</span>
       </div>
     );
   }
@@ -50,29 +50,17 @@ export default function CountdownBanner() {
   const formatDigit = (num: number) => num.toString().padStart(2, '0');
 
   return (
-    <div className="bg-[#101820] text-white border-b-2 border-[#FEE715] py-2 px-3 sm:px-4 sticky top-0 z-40 shadow-md">
+    <div className="bg-[#101820] text-white border-b-2 border-[#FEE715] py-1.5 sm:py-2 px-3 sm:px-4 sticky top-0 z-40 shadow-md">
       <div className="container mx-auto">
         
-        {/* MOBILE VIEW (< md / < 430px): Concise Single-Line Streetwear Marquee Banner */}
-        <div className="md:hidden flex items-center justify-between gap-2 text-[11px] font-black uppercase tracking-wider text-[#FEE715]">
-          <div className="flex items-center gap-1.5 truncate">
-            <span className="flex h-2 w-2 relative shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FEE715] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FEE715]"></span>
-            </span>
-            <Flame className="w-3.5 h-3.5 fill-[#FEE715] shrink-0" />
-            <span className="truncate">FLAT 40% OFF • FREE SHIP OVER $99</span>
-          </div>
-          <Link
-            href="/products"
-            className="text-black bg-[#FEE715] hover:bg-yellow-400 px-2.5 py-0.5 rounded text-[10px] font-black shrink-0 flex items-center gap-0.5"
-          >
-            SHOP <ArrowRight className="w-2.5 h-2.5" />
-          </Link>
+        {/* MOBILE VIEW (< sm / < 640px): Clean Single-Line Banner */}
+        <div className="sm:hidden flex items-center justify-center text-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-[#FEE715]">
+          <Flame className="w-3.5 h-3.5 fill-[#FEE715] shrink-0" />
+          <span>🔥 FLAT 40% OFF | FREE SHIPPING OVER $99</span>
         </div>
 
-        {/* DESKTOP & TABLET VIEW (md:flex): Full Countdown Timer with Blocks */}
-        <div className="hidden md:flex items-center justify-between gap-3 text-xs font-black">
+        {/* TABLET & DESKTOP VIEW (hidden sm:flex): Full Countdown Timer with Blocks */}
+        <div className="hidden sm:flex items-center justify-between gap-3 text-xs font-black">
           
           {/* Left: Tagline */}
           <div className="flex items-center gap-2 text-[#FEE715] uppercase tracking-wider">
