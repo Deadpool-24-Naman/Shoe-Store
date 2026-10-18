@@ -13,6 +13,7 @@ import {
   ClipboardList,
 } from 'lucide-react';
 import OrderTracker from '@/components/OrderTracker';
+import { formatPrice } from '@/lib/utils';
 
 interface TrackItem {
   name: string;
@@ -228,7 +229,7 @@ function TrackOrderContent() {
                     ✓ {order.status}
                   </span>
                   <span className="text-xl font-black text-black bg-[#FEE715] px-3 py-1.5 rounded-xl border border-black">
-                    ${order.total.toFixed(2)}
+                    {formatPrice(order.total)}
                   </span>
                 </div>
               </div>
@@ -267,7 +268,7 @@ function TrackOrderContent() {
                         </p>
                       </div>
                       <p className="font-black text-zinc-900 shrink-0">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatPrice(item.price * item.quantity)}
                       </p>
                     </div>
                   ))

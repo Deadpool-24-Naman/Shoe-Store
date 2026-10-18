@@ -5,6 +5,8 @@
  * never crashes the module at import time.
  */
 
+import { formatPrice } from '@/lib/utils';
+
 export async function sendOrderConfirmation(
   order: {
     orderId: string;
@@ -30,9 +32,9 @@ export async function sendOrderConfirmation(
     const itemsList = order.items
       .map(
         (item) =>
-          `- ${item.name} (Size ${item.size}) x${item.quantity}: $${(
+          `- ${item.name} (Size ${item.size}) x${item.quantity}: ${formatPrice(
             item.price * item.quantity
-          ).toFixed(2)}`
+          )}`
       )
       .join('\n');
 
@@ -40,7 +42,7 @@ export async function sendOrderConfirmation(
       <div style="font-family:sans-serif;max-width:600px;margin:auto">
         <h1 style="color:#1d4ed8">Thank you for your order! 🎉</h1>
         <p><strong>Order ID:</strong> ${order.orderId}</p>
-        <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+        <p><strong>Total:</strong> ${formatPrice(order.total)}</p>
         <h2>Items</h2>
         <pre style="background:#f3f4f6;padding:12px;border-radius:8px">${itemsList}</pre>
         ${

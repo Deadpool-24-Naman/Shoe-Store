@@ -7,6 +7,7 @@ import { CreditCard, Lock, ShieldCheck, ArrowRight, MapPin, UserCheck, AlertCirc
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import PayViaUPIModal from '@/components/PayViaUPIModal';
+import { formatPrice } from '@/lib/utils';
 
 function CheckoutContent() {
   const { data: session, status } = useSession();
@@ -312,7 +313,7 @@ function CheckoutContent() {
                         <p className="text-xs font-bold text-zinc-500 mt-0.5">Size {item.size} • Qty {item.quantity}</p>
                       </div>
                     </div>
-                    <p className="font-black text-sm text-zinc-900">${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-black text-sm text-zinc-900">{formatPrice(item.price * item.quantity)}</p>
                   </div>
                 ))}
               </div>
@@ -320,13 +321,13 @@ function CheckoutContent() {
               <div className="pt-6 border-t-2 border-zinc-100 space-y-3 text-xs font-bold text-zinc-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-extrabold text-zinc-900">${subtotal.toFixed(2)}</span>
+                  <span className="font-extrabold text-zinc-900">{formatPrice(subtotal)}</span>
                 </div>
 
                 {appliedCoupon && (
                   <div className="flex justify-between text-emerald-700 bg-emerald-50 p-2 rounded-xl border border-emerald-200">
                     <span>Discount ({appliedCoupon.code})</span>
-                    <span className="font-black">-${discountAmount.toFixed(2)}</span>
+                    <span className="font-black">-{formatPrice(discountAmount)}</span>
                   </div>
                 )}
 
@@ -338,7 +339,7 @@ function CheckoutContent() {
                 <div className="flex justify-between items-center text-lg font-black text-zinc-900 pt-3 border-t-2 border-zinc-100">
                   <span>Total Payable</span>
                   <span className="text-2xl text-black bg-[#FEE715] px-2.5 py-0.5 rounded-xl border border-black">
-                    ${finalTotal.toFixed(2)}
+                    {formatPrice(finalTotal)}
                   </span>
                 </div>
               </div>
@@ -430,7 +431,7 @@ function CheckoutContent() {
                 ) : (
                   <>
                     <Smartphone className="w-5 h-5" />
-                    <span>Pay via UPI / Cards (${finalTotal.toFixed(2)})</span>
+                    <span>Pay via UPI / Cards ({formatPrice(finalTotal)})</span>
                   </>
                 )}
               </button>

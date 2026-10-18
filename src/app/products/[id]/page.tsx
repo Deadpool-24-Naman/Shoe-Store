@@ -8,6 +8,7 @@ import StyleMatcherSection from '@/components/StyleMatcherSection';
 import ProductImage from '@/components/ProductImage';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
 
 export default async function ProductDetail({ params }: { params: Promise<{ id: string }> | { id: string } }) {
   const resolvedParams = await params;
@@ -79,8 +80,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
               </h1>
               
               <div className="flex items-baseline gap-3 mb-6">
-                <p className="text-3xl font-black text-black">${(product.price ?? 0).toFixed(2)}</p>
-                <p className="text-sm font-semibold text-zinc-400 line-through">${((product.price ?? 0) * 1.35).toFixed(2)}</p>
+                <p className="text-3xl font-black text-black">{formatPrice(product.price ?? 0)}</p>
+                <p className="text-sm font-semibold text-zinc-400 line-through">{formatPrice((product.price ?? 0) * 1.35)}</p>
                 <span className="text-xs font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded uppercase">
                   25% OFF
                 </span>

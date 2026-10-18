@@ -128,7 +128,7 @@ export async function POST(req: Request) {
       console.warn('Failed to send order confirmation email:', emailErr);
     }
 
-    console.log(`Order successfully created! Order ID: ${order.id}, User ID: ${userId}, Total: $${totalAmount}${couponCode ? ` (Coupon: ${couponCode})` : ''}`);
+    console.log(`Order successfully created! Order ID: ${order.id}, User ID: ${userId}, Total: ₹${totalAmount}${couponCode ? ` (Coupon: ${couponCode})` : ''}`);
 
     return NextResponse.json({
       url: redirectUrl,

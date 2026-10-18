@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, Smartphone, CreditCard, Banknote, Check, Loader2, Shield, QrCode } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
 
 interface PayViaUPIModalProps {
   isOpen: boolean;
@@ -113,7 +114,7 @@ export default function PayViaUPIModal({
         {/* Amount Banner */}
         <div className="bg-[#FEE715] px-6 py-3 flex items-center justify-between">
           <span className="text-black font-black text-xs uppercase tracking-widest">Amount Payable</span>
-          <span className="text-black font-black text-2xl">${totalAmount.toFixed(2)}</span>
+          <span className="text-black font-black text-2xl">{formatPrice(totalAmount)}</span>
         </div>
 
         {/* Tab Selector */}
@@ -324,7 +325,7 @@ export default function PayViaUPIModal({
               className="mt-6 w-full bg-[#101820] hover:bg-black active:scale-[0.98] text-[#FEE715] font-black uppercase tracking-wider py-4 rounded-2xl flex items-center justify-center gap-2 transition-all border-2 border-black shadow-[4px_4px_0px_0px_rgba(254,231,21,1)] hover:shadow-[2px_2px_0px_0px_rgba(254,231,21,1)] disabled:bg-zinc-300 disabled:text-zinc-500 disabled:border-zinc-300 disabled:shadow-none"
             >
               <Shield className="w-4 h-4" />
-              Pay ${totalAmount.toFixed(2)} Securely
+              Pay {formatPrice(totalAmount)} Securely
             </button>
           )}
 

@@ -14,7 +14,7 @@ interface WheelReward {
 
 const REWARDS: WheelReward[] = [
   { label: '15% OFF', code: 'DRIP15', color: '#FEE715', textColor: '#000000', discount: '15% Off VIP Club' },
-  { label: 'FREE SHIP', code: 'FREESHIP', color: '#8B5CF6', textColor: '#FFFFFF', discount: 'Free Shipping + $15 Off' },
+  { label: 'FREE SHIP', code: 'FREESHIP', color: '#8B5CF6', textColor: '#FFFFFF', discount: 'Free Shipping + ₹500 Off' },
   { label: '20% OFF', code: 'SPIN20', color: '#101820', textColor: '#FEE715', discount: '20% Off Streetwear Drop' },
   { label: '10% OFF', code: 'FIRST10', color: '#10B981', textColor: '#000000', discount: '10% Off Everything' },
   { label: '25% OFF', code: 'BEWAKOOF', color: '#FF3E6C', textColor: '#FFFFFF', discount: '25% Off Gen-Z Drop' },

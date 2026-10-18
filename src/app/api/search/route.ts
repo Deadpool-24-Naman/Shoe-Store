@@ -52,9 +52,13 @@ export async function GET(request: Request) {
 
     const lowerQuery = query.toLowerCase();
 
-    // Check for "under 100", "under $100", "< 100", "under 150", etc.
-    const underPriceMatch = lowerQuery.match(/under\s*\$?(\d+)|<\s*\$?(\d+)/i);
-    const maxPrice = underPriceMatch ? parseFloat(underPriceMatch[1] || underPriceMatch[2]) : null;
+    // Check for "under 5000", "under ₹9999", "under rs 7999", "< 10000", etc.
+    const underPriceMatch = lowerQuery.match(/under\s*(?:₹|rs\.?|inr|\$)?\s*(\d+)|<\s*(?:₹|rs\.?|inr|\$)?\s*(\d+)/i);
+    let maxPrice = underPriceMatch ? parseFloat(underPriceMatch[1] || underPriceMatch[2]) : null;
+    if (maxPrice !== null && maxPrice <= 250) {
+      // If user typed e.g. "under 100", treat as under 10,000 INR
+      maxPrice = maxPrice * 100;
+    }
 
     // Check for brand alias
     const matchedBrand = Object.entries(BRAND_ALIASES).find(([alias]) =>

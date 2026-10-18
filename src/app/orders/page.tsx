@@ -14,6 +14,7 @@ import {
   Flame,
 } from 'lucide-react';
 import OrderTracker from '@/components/OrderTracker';
+import { formatPrice } from '@/lib/utils';
 
 export default function OrdersPage() {
   const { data: session, status } = useSession();
@@ -154,7 +155,7 @@ export default function OrdersPage() {
                           <CheckCircle className="w-3 h-3" /> {order.status}
                         </span>
                         <span className="text-xl font-black text-zinc-900 bg-[#FEE715] px-3 py-1 rounded-xl border border-black">
-                          ${order.total.toFixed(2)}
+                          {formatPrice(order.total)}
                         </span>
                       </div>
                     </div>
@@ -189,7 +190,7 @@ export default function OrdersPage() {
                             </p>
                           </div>
                           <p className="font-black text-zinc-900 text-sm shrink-0">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            {formatPrice(item.price * item.quantity)}
                           </p>
                         </div>
                       ))}

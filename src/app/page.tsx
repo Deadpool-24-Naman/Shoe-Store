@@ -73,7 +73,7 @@ export default async function Home() {
           <Flame className="w-3.5 h-3.5 fill-[#FEE715]" /> STREETWEAR EDITIONS LIVE
         </span>
         <span className="flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5" /> FREE EXPRESS SHIPPING OVER $99
+          <Sparkles className="w-3.5 h-3.5" /> FREE EXPRESS SHIPPING OVER ₹999
         </span>
         <span className="hidden lg:flex items-center gap-1.5">
           <Tag className="w-3.5 h-3.5" /> USE CODE: <span className="underline decoration-2">DRIP15</span>

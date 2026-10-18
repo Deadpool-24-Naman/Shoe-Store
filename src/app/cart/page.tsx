@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Trash2, ShoppingBag, ArrowRight, ShieldCheck, Truck, Tag, Check, X, Flame } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { formatPrice } from '@/lib/utils';
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, getTotal } = useCartStore();
@@ -147,7 +148,7 @@ export default function CartPage() {
                         Size: <span className="bg-[#FEE715] text-black font-black px-1.5 py-0.5 rounded text-[11px]">{item.size}</span>
                       </p>
                     </div>
-                    <p className="font-black text-xl text-zinc-950">${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-black text-xl text-zinc-950">{formatPrice(item.price * item.quantity)}</p>
                   </div>
                   
                   <div className="flex items-center justify-between mt-6 pt-4 border-t border-zinc-100">
@@ -262,13 +263,13 @@ export default function CartPage() {
               <div className="space-y-3.5 mb-6 text-xs font-bold text-zinc-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-extrabold text-zinc-900">${subtotal.toFixed(2)}</span>
+                  <span className="font-extrabold text-zinc-900">{formatPrice(subtotal)}</span>
                 </div>
 
                 {appliedCoupon && (
                   <div className="flex justify-between text-emerald-600 bg-emerald-50 p-2 rounded-xl border border-emerald-200">
                     <span>Discount ({appliedCoupon.code})</span>
-                    <span className="font-black">-${discountAmount.toFixed(2)}</span>
+                    <span className="font-black">-{formatPrice(discountAmount)}</span>
                   </div>
                 )}
 
@@ -278,7 +279,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between">
                   <span>Estimated Tax</span>
-                  <span className="font-extrabold text-zinc-900">$0.00</span>
+                  <span className="font-extrabold text-zinc-900">₹0</span>
                 </div>
               </div>
 
@@ -286,7 +287,7 @@ export default function CartPage() {
                 <div className="flex justify-between items-center text-lg font-black text-zinc-900">
                   <span>Total Due</span>
                   <span className="text-2xl text-black bg-[#FEE715] px-2.5 py-0.5 rounded-xl border border-black">
-                    ${finalTotal.toFixed(2)}
+                    {formatPrice(finalTotal)}
                   </span>
                 </div>
               </div>

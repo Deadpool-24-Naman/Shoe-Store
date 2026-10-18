@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
+import { formatPrice } from '@/lib/utils';
 
 interface CouponDefinition {
   code: string;
   type: 'percentage' | 'fixed';
-  value: number; // percentage (e.g. 10 for 10%) or fixed amount in USD
+  value: number; // percentage (e.g. 10 for 10%) or fixed amount in INR
   minOrder?: number;
   description: string;
 }
@@ -30,15 +31,15 @@ const AVAILABLE_COUPONS: Record<string, CouponDefinition> = {
   FREESHIP: {
     code: 'FREESHIP',
     type: 'fixed',
-    value: 15,
-    description: 'Free Express Shipping & $15 bonus off',
+    value: 500,
+    description: 'Free Express Shipping & ₹500 bonus off',
   },
   STREET20: {
     code: 'STREET20',
     type: 'percentage',
     value: 20,
-    minOrder: 100,
-    description: '20% off on orders over $100',
+    minOrder: 4999,
+    description: '20% off on orders over ₹4,999',
   },
   BEWAKOOF: {
     code: 'BEWAKOOF',
@@ -49,9 +50,9 @@ const AVAILABLE_COUPONS: Record<string, CouponDefinition> = {
   FLAT30: {
     code: 'FLAT30',
     type: 'fixed',
-    value: 30,
-    minOrder: 120,
-    description: '$30 flat discount on orders over $120',
+    value: 1000,
+    minOrder: 5999,
+    description: '₹1,000 flat discount on orders over ₹5,999',
   },
 };
 
@@ -85,7 +86,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           valid: false,
-          error: `Coupon "${coupon.code}" requires a minimum order subtotal of $${coupon.minOrder.toFixed(2)}.`,
+          error: `Coupon "${coupon.code}" requires a minimum order subtotal of ${formatPrice(coupon.minOrder)}.`,
         },
         { status: 400 }
       );

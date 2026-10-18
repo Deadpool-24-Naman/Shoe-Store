@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X, Clock, Flame, Sparkles, ArrowRight, Tag, CornerDownLeft, Loader2, AlertCircle } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
 
 const TRENDING_SEARCHES = [
   'Air Jordan 1',
   'Chunky Kicks',
-  'Under $100',
+  'Under ₹7,999',
   'Nike Dunk Panda',
   'Adidas Samba',
   'Anime Edition',
@@ -243,7 +244,7 @@ export default function SearchModal({ isOpen: controlledIsOpen, onClose: control
               setSelectedIndex(-1);
             }}
             onKeyDown={handleInputKeyDown}
-            placeholder="Search brand, model, 'under $100', 'chunky', 'anime'..."
+            placeholder="Search brand, model, 'under ₹7999', 'chunky', 'anime'..."
             className="w-full bg-transparent text-sm sm:text-base font-bold text-zinc-900 placeholder-zinc-400 focus:outline-none"
           />
 
@@ -416,7 +417,7 @@ export default function SearchModal({ isOpen: controlledIsOpen, onClose: control
                         <div className="flex items-center gap-3 shrink-0 ml-3">
                           <div className="text-right">
                             <span className="font-black text-base text-zinc-950">
-                              ${product.price.toFixed(2)}
+                              {formatPrice(product.price)}
                             </span>
                           </div>
                           <div

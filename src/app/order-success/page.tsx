@@ -18,6 +18,7 @@ import {
   Flame,
 } from 'lucide-react';
 import OrderTracker from '@/components/OrderTracker';
+import { formatPrice } from '@/lib/utils';
 
 interface OrderItem {
   id: string;
@@ -282,7 +283,7 @@ function OrderSuccessContent() {
                         </p>
                       </div>
                       <p className="text-[#FEE715] font-black text-sm shrink-0">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatPrice(item.price * item.quantity)}
                       </p>
                     </div>
                   ))
@@ -332,12 +333,12 @@ function OrderSuccessContent() {
               <div className="space-y-3 text-xs font-bold text-zinc-400">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="text-white font-extrabold">${displaySubtotal.toFixed(2)}</span>
+                  <span className="text-white font-extrabold">{formatPrice(displaySubtotal)}</span>
                 </div>
                 {displayDiscount > 0 && displayCoupon && (
                   <div className="flex justify-between text-emerald-400 bg-emerald-500/10 p-2 rounded-xl border border-emerald-500/20">
                     <span>Discount ({displayCoupon})</span>
-                    <span className="font-black">-${displayDiscount.toFixed(2)}</span>
+                    <span className="font-black">-{formatPrice(displayDiscount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
@@ -347,7 +348,7 @@ function OrderSuccessContent() {
                 <div className="flex justify-between items-center text-base font-black text-white pt-3 border-t-2 border-zinc-700">
                   <span>Total Paid</span>
                   <span className="text-xl text-black bg-[#FEE715] px-3 py-1 rounded-xl border border-black">
-                    ${displayTotal.toFixed(2)}
+                    {formatPrice(displayTotal)}
                   </span>
                 </div>
               </div>

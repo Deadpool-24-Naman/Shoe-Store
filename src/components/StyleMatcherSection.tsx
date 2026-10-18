@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useCartStore } from '@/lib/store';
 import { Plus, Check, Sparkles, Flame, ShoppingBag, ArrowRight } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
 
 interface AccessoryItem {
   id: string;
@@ -17,7 +18,7 @@ const STREETWEAR_ACCESSORIES: AccessoryItem[] = [
   {
     id: 'acc-socks-cyber',
     name: 'Cyberpunk Ribbed Crew Socks (3-Pack)',
-    price: 14.99,
+    price: 499,
     image: 'https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?q=80&w=400&auto=format&fit=crop',
     tagline: 'Cushioned heel & breathable streetwear weave',
     badge: 'MUST HAVE',
@@ -25,7 +26,7 @@ const STREETWEAR_ACCESSORIES: AccessoryItem[] = [
   {
     id: 'acc-rope-laces',
     name: 'Oversized Streetwear Chunky Rope Laces',
-    price: 8.99,
+    price: 299,
     image: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?q=80&w=400&auto=format&fit=crop',
     tagline: 'Heavy-duty 8mm thick custom lace upgrade',
     badge: 'POPULAR',
@@ -33,7 +34,7 @@ const STREETWEAR_ACCESSORIES: AccessoryItem[] = [
   {
     id: 'acc-care-kit',
     name: 'Sneaker Shield & Foam Cleaner Kit',
-    price: 19.99,
+    price: 699,
     image: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=400&auto=format&fit=crop',
     tagline: 'Waterproof repellent spray + horsehair brush',
     badge: 'ESSENTIAL',
@@ -41,7 +42,7 @@ const STREETWEAR_ACCESSORIES: AccessoryItem[] = [
   {
     id: 'acc-dubraes',
     name: 'Reflective Sneaker Dubraes & Lace Charms',
-    price: 6.99,
+    price: 249,
     image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=400&auto=format&fit=crop',
     tagline: 'Metallic streetwear tags for personalized drip',
     badge: 'STYLE DROP',
@@ -120,7 +121,7 @@ export default function StyleMatcherSection({ mainProductName }: { mainProductNa
             </>
           ) : (
             <>
-              <Sparkles className="w-4 h-4 text-[#FEE715]" /> ADD ALL 4 (SAVE 15% • ${bundleDiscounted})
+              <Sparkles className="w-4 h-4 text-[#FEE715]" /> ADD ALL 4 (SAVE 15% • {formatPrice(Number(bundleDiscounted))})
             </>
           )}
         </button>
@@ -156,7 +157,7 @@ export default function StyleMatcherSection({ mainProductName }: { mainProductNa
               </div>
 
               <div className="pt-3 border-t border-zinc-200/80 flex items-center justify-between mt-auto">
-                <span className="text-base font-black text-zinc-950">${item.price.toFixed(2)}</span>
+                <span className="text-base font-black text-zinc-950">{formatPrice(item.price)}</span>
 
                 <button
                   type="button"

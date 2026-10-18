@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Star, Zap, Flame, Sparkles, Crown } from 'lucide-react';
 import WishlistButton from './WishlistButton';
+import { formatPrice } from '@/lib/utils';
 
 const PLACEHOLDER_IMG = '/placeholder-shoe.svg';
 
@@ -37,7 +38,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const isOutOfStock = (product?.stock ?? 0) <= 0;
   const isLowStock = !isOutOfStock && (product?.stock ?? 0) <= 3;
   const price = typeof product?.price === 'number' ? product.price : 0;
-  const originalPrice = (price * 1.35).toFixed(2);
+  const originalPrice = formatPrice(price * 1.35);
   const discountPercent = 25;
 
   // Gen-Z Streetwear Badges (Bewakoof style)
@@ -132,8 +133,8 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         <div className="pt-3 border-t border-zinc-100 flex items-center justify-between mt-auto">
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-black text-zinc-950">${price.toFixed(2)}</span>
-              <span className="text-xs font-semibold text-zinc-400 line-through">${originalPrice}</span>
+              <span className="text-lg sm:text-xl font-black text-zinc-950">{formatPrice(price)}</span>
+              <span className="text-xs font-semibold text-zinc-400 line-through">{originalPrice}</span>
             </div>
             <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
               {discountPercent}% OFF

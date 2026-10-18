@@ -42,7 +42,7 @@ export default function CountdownBanner() {
   if (!mounted) {
     return (
       <div className="bg-[#101820] text-[#FEE715] py-2 px-3 font-black text-[11px] sm:text-xs uppercase tracking-widest border-b border-[#FEE715]/40 flex items-center justify-center">
-        <span>🔥 FLAT 40% OFF | FREE SHIPPING OVER $99</span>
+        <span>🔥 FLAT 40% OFF | FREE SHIPPING OVER ₹999</span>
       </div>
     );
   }
@@ -56,7 +56,7 @@ export default function CountdownBanner() {
         {/* MOBILE VIEW (< sm / < 640px): Clean Single-Line Banner */}
         <div className="sm:hidden flex items-center justify-center text-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-[#FEE715]">
           <Flame className="w-3.5 h-3.5 fill-[#FEE715] shrink-0" />
-          <span>🔥 FLAT 40% OFF | FREE SHIPPING OVER $99</span>
+          <span>🔥 FLAT 40% OFF | FREE SHIPPING OVER ₹999</span>
         </div>
 
         {/* TABLET & DESKTOP VIEW (hidden sm:flex): Full Countdown Timer with Blocks */}
