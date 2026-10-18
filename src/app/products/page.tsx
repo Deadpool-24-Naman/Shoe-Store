@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Filter, Search, X, Flame, Sparkles, Tag, Check } from 'lucide-react';
+import { Filter, Search, X, Flame, Sparkles, Tag } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 
 interface ProductsPageProps {
@@ -155,49 +155,8 @@ async function ProductsContent({ searchParams }: ProductsPageProps) {
                 )}
               </div>
               
-              {/* Filter By Brand (Sidebar) */}
-              <div>
-                <h4 className="font-black text-zinc-900 mb-3 uppercase text-xs tracking-wider flex items-center justify-between">
-                  <span>Filter by Brand</span>
-                  {brand && brand.toLowerCase() !== 'all' && (
-                    <span className="text-[10px] bg-[#FEE715] text-black px-1.5 py-0.5 rounded font-black">
-                      {brand}
-                    </span>
-                  )}
-                </h4>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {POPULAR_BRANDS.map((b) => {
-                    const brandValue = b.toLowerCase();
-                    const isBrandActive = (b === 'All' && !brand) || (brand && brand.toLowerCase() === brandValue);
-                    
-                    const params = new URLSearchParams();
-                    if (b !== 'All') params.set('brand', b);
-                    if (category) params.set('category', category);
-                    if (searchQuery) params.set('search', searchQuery);
-                    if (sort) params.set('sort', sort);
-
-                    const href = params.toString() ? `/products?${params.toString()}` : '/products';
-
-                    return (
-                      <Link
-                        key={b}
-                        href={href}
-                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border ${
-                          isBrandActive
-                            ? 'bg-[#FEE715] text-black border-black shadow-sm font-black'
-                            : 'bg-zinc-50 text-zinc-700 border-zinc-200 hover:bg-zinc-100 hover:text-black'
-                        }`}
-                      >
-                        <span>{b}</span>
-                        {isBrandActive && <Check className="w-3 h-3 text-black stroke-[3]" />}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-
               {/* Category Filter */}
-              <div className="pt-4 border-t border-zinc-100">
+              <div>
                 <h4 className="font-black text-zinc-900 mb-3 uppercase text-xs tracking-wider">Categories</h4>
                 <ul className="space-y-1.5">
                   {['All', 'Men', 'Women', 'Kids', 'Sports'].map((cat) => {
