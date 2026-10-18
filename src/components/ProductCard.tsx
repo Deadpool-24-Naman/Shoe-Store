@@ -41,7 +41,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const originalPrice = formatPrice(price * 1.35);
   const discountPercent = 25;
 
-  // Gen-Z Streetwear Badges (Bewakoof style)
+  // Streetwear Badges
   const getBadge = () => {
     if (isOutOfStock) {
       return {
@@ -59,10 +59,10 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
     }
 
     const badgeTypes = [
-      { text: 'HOT SELLING', className: 'bg-[#FEE715] text-black font-black', icon: <Flame className="w-3 h-3 fill-black" /> },
-      { text: 'TRENDING', className: 'bg-black text-[#FEE715] border border-[#FEE715]/50 font-black', icon: <Sparkles className="w-3 h-3 text-[#FEE715]" /> },
-      { text: 'LIMITED DROP', className: 'bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black', icon: <Crown className="w-3 h-3 text-yellow-300" /> },
-      { text: 'BESTSELLER', className: 'bg-emerald-400 text-black font-black', icon: <Star className="w-3 h-3 fill-black" /> },
+      { text: 'HOT SELLING', className: 'bg-[#FEE715] text-black font-black shadow-xs', icon: <Flame className="w-3 h-3 fill-black" /> },
+      { text: 'HOT DROPS', className: 'bg-black text-[#FEE715] border border-[#FEE715]/50 font-black shadow-xs', icon: <Sparkles className="w-3 h-3 text-[#FEE715]" /> },
+      { text: 'LIMITED DROP', className: 'bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black shadow-xs', icon: <Crown className="w-3 h-3 text-yellow-300" /> },
+      { text: 'BESTSELLER', className: 'bg-emerald-400 text-black font-black shadow-xs', icon: <Star className="w-3 h-3 fill-black" /> },
     ];
 
     return badgeTypes[index % badgeTypes.length];
@@ -73,14 +73,14 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const reviewsCount = 40 + ((index * 73) % 350);
 
   return (
-    <div className="group bg-white rounded-3xl overflow-hidden border-2 border-zinc-200/90 hover:border-black shadow-sm hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 flex flex-col relative">
+    <div className="group bg-white rounded-2xl overflow-hidden border border-zinc-200/90 hover:border-zinc-900 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col relative">
       
-      {/* Image Container */}
-      <div className="relative h-64 overflow-hidden bg-[#F4F4F5] p-5 flex items-center justify-center">
-        {/* Streetwear Badge */}
+      {/* Edge-to-Edge Top Image Section (First Half) */}
+      <div className="relative w-full aspect-[4/3] bg-gray-50/50 p-4 flex items-center justify-center overflow-hidden">
+        {/* Floating Badge */}
         <div className="absolute top-3 left-3 z-10">
           <span
-            className={`inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md shadow-sm ${badge.className}`}
+            className={`inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md ${badge.className}`}
           >
             {badge.icon}
             {badge.text}
@@ -90,49 +90,44 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         {/* Wishlist Heart Button */}
         <WishlistButton productId={product.id} />
 
-        {/* Shoe Image */}
+        {/* Seamless Image */}
         <Link href={`/products/${product.id}`} className="w-full h-full flex items-center justify-center">
           <img
             src={imgSrc}
             alt={product?.name || 'Streetwear Footwear'}
-            className="object-contain w-full h-full group-hover:scale-110 group-hover:-rotate-2 transition-transform duration-500 mix-blend-multiply"
+            className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-300 mix-blend-multiply"
             onError={() => setImgSrc(PLACEHOLDER_IMG)}
           />
         </Link>
       </div>
 
-      {/* Product Information */}
-      <div className="p-5 flex-1 flex flex-col justify-between bg-white">
+      {/* Clean Bottom Details Section (Second Half) */}
+      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
         <div>
-          {/* Brand & Category Pill */}
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <span className="text-[11px] font-black uppercase tracking-widest text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded">
+          {/* Brand Name & Rating on a single line */}
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <span className="text-[11px] font-black uppercase tracking-wider text-zinc-500">
               {product?.brand || 'STREET'}
             </span>
-            <div className="flex items-center gap-1 text-xs font-bold text-zinc-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60">
-              <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+            <div className="flex items-center gap-1 text-xs font-bold text-zinc-800">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               <span>{rating}</span>
               <span className="text-zinc-400 text-[10px]">({reviewsCount})</span>
             </div>
           </div>
 
-          {/* Product Name */}
+          {/* Bold Product Title */}
           <Link href={`/products/${product.id}`}>
-            <h3 className="font-extrabold text-lg text-zinc-900 group-hover:text-black group-hover:underline transition-colors line-clamp-1 mb-1">
+            <h3 className="font-extrabold text-base sm:text-lg text-zinc-900 group-hover:text-black group-hover:underline transition-colors line-clamp-1 mb-1">
               {product?.name || 'Streetwear Sneakers'}
             </h3>
           </Link>
-
-          {/* Short Description */}
-          <p className="text-zinc-500 text-xs line-clamp-2 mb-4 leading-relaxed font-medium">
-            {product?.description || 'Engineered for high comfort, bold style and daily drip.'}
-          </p>
         </div>
 
         {/* Price & Action Row */}
-        <div className="pt-3 border-t border-zinc-100 flex items-center justify-between mt-auto">
+        <div className="pt-3 flex items-center justify-between mt-auto">
           <div>
-            <div className="flex items-baseline gap-2">
+            <div className="flex items-baseline gap-1.5">
               <span className="text-lg sm:text-xl font-black text-zinc-950">{formatPrice(price)}</span>
               <span className="text-xs font-semibold text-zinc-400 line-through">{originalPrice}</span>
             </div>
@@ -143,10 +138,10 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
 
           <Link
             href={`/products/${product.id}`}
-            className="w-10 h-10 rounded-2xl bg-zinc-900 group-hover:bg-[#FEE715] group-hover:text-black text-white flex items-center justify-center transition-all duration-200 shadow-sm"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-zinc-900 group-hover:bg-[#FEE715] group-hover:text-black text-white flex items-center justify-center transition-all duration-200 shadow-sm shrink-0"
             aria-label="View product"
           >
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
       </div>
